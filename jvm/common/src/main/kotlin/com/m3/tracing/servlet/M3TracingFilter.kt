@@ -2,6 +2,7 @@ package com.m3.tracing.servlet
 
 import com.m3.tracing.servlet.impl.ServletRequestExtractor
 import io.opencensus.contrib.http.HttpExtractor
+import io.opencensus.contrib.http.HttpRequestContext
 import io.opencensus.contrib.http.HttpServerHandler
 import io.opencensus.trace.AttributeValue
 import io.opencensus.trace.Span
@@ -83,51 +84,51 @@ class M3TracingFilter : Filter {
         var chainError: Throwable? = null
         var span: Span? = null
         try {
-            try {
-                val context = handler.handleStart(req, req)
-                req.contentLength.let { length ->
-                    if (length > 0) handler.handleMessageReceived(context, length.toLong())
-                }
-                span = handler.getSpanFromContext((context))
-                Tracing.getTracer().withSpan(span).use { scope ->
-                    // note: Must close scope to prevent leak!
-                    chainInvoked.set(true)
-                    chainError = chain.doFilterAndCatch(rawReq, rawRes)
-                }
-                if (chainError != null) saveException(span, chainError!!)
-                res.getHeader("Content-Length").let { length ->
-                    if (! length.isNullOrEmpty()) handler.handleMessageSent(context, length.toLong())
-                }
-                captureAdditionalRequestInfo(span, req)
-                handler.handleEnd(context, req, res, chainError)
-                span = null // Span is closed in handleEnd
-            } catch (e: Exception) {
-                logger.error("Error occured in tracing", e)
-            } finally {
-                // Always run application logic even if tracing failed
-                if (! chainInvoked.get()) {
-                    chainInvoked.set(true)
-                    chainError = chain.doFilterAndCatch(rawReq, rawRes)
-                }
-                if (span != null) {
-                    span.end() // Close span to prevent memory leak
-                }
+            val context = crateContext(req, res)
+            span = handler.getSpanFromContext((context))
+            Tracing.getTracer().withSpan(span).use {
+                // note: Must close scope to prevent leak!
+                chainInvoked.set(true)
+                chainError = chain.doFilterAndCatch(rawReq, rawRes)
             }
+            finalizeRequestSpan(span, context, req, res, chainError)
+            span = null // Span is closed
+        } catch (e: Exception) {
+            logger.error("Error occured in tracing", e)
         } finally {
-            if (chainError != null) {
-                throw chainError!! // Re-throw application exception anyway
+            // Always run application logic even if tracing failed
+            if (! chainInvoked.get()) {
+                chainInvoked.set(true)
+                chainError = chain.doFilterAndCatch(rawReq, rawRes)
+            }
+
+            try {
+                span?.end()
+            } catch (e: Throwable) {
+                logger.error("Failed to close tracing Span. Might cause memory leak.", e)
+            }
+        }
+        if (chainError != null) {
+            throw chainError!! // Re-throw application exception anyway
+        }
+    }
+
+    private fun crateContext(req: HttpServletRequest, res: HttpServletResponse): HttpRequestContext {
+        return handler.handleStart(req, req).also { context ->
+            req.contentLength.let { length ->
+                if (length > 0) handler.handleMessageReceived(context, length.toLong())
             }
         }
     }
 
-
-    private fun FilterChain.doFilterAndCatch(req: ServletRequest, res: ServletResponse): Throwable? {
-        try {
-            this.doFilter(req, res)
-        } catch (e: Throwable) {
-            return e
+    private fun finalizeRequestSpan(span: Span, context: HttpRequestContext, req: HttpServletRequest, res: HttpServletResponse, chainError: Throwable?) {
+        if (chainError != null) saveException(span, chainError!!)
+        res.getHeader("Content-Length").let { length ->
+            if (! length.isNullOrEmpty()) handler.handleMessageSent(context, length.toLong())
         }
-        return null
+        captureAdditionalRequestInfo(span, req)
+        handler.handleEnd(context, req, res, chainError)
+
     }
 
     private fun captureAdditionalRequestInfo(span: Span, req: HttpServletRequest) {
@@ -144,6 +145,15 @@ class M3TracingFilter : Filter {
     private fun saveException(span: Span, e: Throwable) {
         span.putAttribute("exception_class", e.javaClass.name)
         span.putAttribute("exception_messsage", e.message)
+    }
+
+    private fun FilterChain.doFilterAndCatch(req: ServletRequest, res: ServletResponse): Throwable? {
+        try {
+            this.doFilter(req, res)
+        } catch (e: Throwable) {
+            return e
+        }
+        return null
     }
 
     private fun Span.putAttribute(key: String, value: String?) {

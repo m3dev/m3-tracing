@@ -11,7 +11,6 @@ internal class ServletRequestExtractor : HttpExtractor<HttpServletRequest, HttpS
     override fun getHost(request: HttpServletRequest) = request.serverName
     override fun getMethod(request: HttpServletRequest) = request.method
 
-    // TODO: Does this preserve request character set?
     override fun getPath(request: HttpServletRequest) = request.requestURI
 
     override fun getUserAgent(request: HttpServletRequest) = request.getHeader("User-Agent")
