@@ -1,6 +1,8 @@
 package com.m3.tracing.tracer.opencensus
 
 import com.m3.tracing.http.*
+import io.grpc.Context
+import io.opencensus.common.Scope
 import io.opencensus.contrib.http.HttpServerHandler
 import io.opencensus.trace.Tracer
 import io.opencensus.trace.propagation.TextFormat
@@ -23,9 +25,9 @@ internal class HttpRequestTracer(
 
 internal class HttpRequestSpanImpl(
         private val handler: HttpServerHandler<HttpRequestInfo, HttpResponseInfo, HttpRequestInfo>,
-        tracer: Tracer,
+        override val tracer: Tracer,
         private val request: HttpRequestInfo
-): TraceSpanImpl(), HttpRequestSpan {
+): TraceSpanImpl(null), HttpRequestSpan {
     companion object {
         private val requestHeadersToCapture = listOf("X-Forwarded-For")
         private val logger = LoggerFactory.getLogger(HttpRequestTracer::class.java)
@@ -37,8 +39,10 @@ internal class HttpRequestSpanImpl(
         }
     }
 
+    override val grpcContext = Context.current()
+    override val grpcContextDetachTo: Context? get() = null
     override val span = handler.getSpanFromContext(context)
-    val scope = tracer.withSpan(span)
+    override val scope: Scope? = tracer.withSpan(span)
 
     private var error: Throwable? = null
     override fun setError(e: Throwable?) {
@@ -61,9 +65,9 @@ internal class HttpRequestSpanImpl(
             logger.error("Failed to capture response detail", e)
         }
 
-        // Must close scope, span in ANY case to prevent memory leak
-        closeQuietly { scope.close() }
-        closeQuietly { super.close() } // Calls span.end()
+        // Must close scope, span in ANY case to prevent memory leak.
+        // So that MUST call super.close().
+        super.close()
     }
 
     private fun captureInfo() {
@@ -72,14 +76,6 @@ internal class HttpRequestSpanImpl(
         }
         requestHeadersToCapture.forEach { header ->
             span.putAttribute(header, request.tryGetHeader(header))
-        }
-    }
-
-    private fun closeQuietly(action: () -> Unit) {
-        try {
-            action()
-        } catch (e: Throwable) {
-            logger.error("Failed to cleanup tracing. Might cause memory leak.", e)
         }
     }
 }

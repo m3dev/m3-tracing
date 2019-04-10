@@ -9,41 +9,47 @@ import org.slf4j.LoggerFactory
 
 /**
  * Just output trace into log.
+ * Useful for local development / unittest.
  */
 class M3LoggingTracer: M3Tracer {
-    private val output = LoggerFactory.getLogger(M3LoggingTracer::class.java)
+    companion object {
+        private val output = LoggerFactory.getLogger(M3LoggingTracer::class.java)
+    }
 
     override fun close() {
         output.info("Tracer closed")
     }
 
-    override fun processIncomingHttpRequest(request: HttpRequestInfo): HttpRequestSpan {
-        output.info("Start of Request: ${request.url}")
+    override fun processIncomingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = object: TraceSpanImpl("HTTP ${request.url}"), HttpRequestSpan {
+        private var e: Throwable? = null
+        override fun setError(e: Throwable?) {
+            this.e = e
+        }
 
-        return object: TraceSpanImpl(), HttpRequestSpan {
-            private var e: Throwable? = null
-            private var response: HttpResponseInfo? = null
-
-            override fun setError(e: Throwable?) {
-                this.e = e
-            }
-
-            override fun setResponse(response: HttpResponseInfo) {
-                this.response = response
-            }
-
-            override fun close() {
-                if (this.e != null) {
-                    output.info("Error captured in request ${request.url}: $e")
-                }
-                if (this.response != null) {
-                    output.info("End of Request: ${request.url}")
-                }
+        override fun setResponse(response: HttpResponseInfo) {}
+        override fun close() {
+            if (this.e != null) {
+                output.info("Error captured in request ${request.url}: $e")
             }
         }
     }
 
-    private open class TraceSpanImpl: TraceSpan {
-        override fun close() {}
+    private open class TraceSpanImpl(protected val name: String): TraceSpan {
+        init {
+            output.info("Start of Tracing Span: \"$name\"")
+        }
+        override fun close() {
+            output.info("End of Tracing Span: \"$name\" (${tags.filterValues { it != null }})")
+        }
+
+        override fun startChildSpan(name: String): TraceSpan {
+            return TraceSpanImpl(name)
+        }
+
+        private val tags = mutableMapOf<String, Any?>()
+        override fun set(tagName: String, value: String?): TraceSpan { tags[tagName] = value; return this }
+        override fun set(tagName: String, value: Boolean?): TraceSpan { tags[tagName] = value; return this }
+        override fun set(tagName: String, value: Int?): TraceSpan { tags[tagName] = value; return this }
+        override fun set(tagName: String, value: Long?): TraceSpan { tags[tagName] = value; return this }
     }
 }

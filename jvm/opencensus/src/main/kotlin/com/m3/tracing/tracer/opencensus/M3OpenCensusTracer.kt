@@ -4,15 +4,18 @@ import com.m3.tracing.M3Tracer
 import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestSpan
 import io.opencensus.trace.Tracing
+import org.slf4j.LoggerFactory
 
 /**
  * Send tracing data to somewhere with OpenTracing.
  * Note that you need to register manually (e.g. `LoggingTraceExporter.register();`).
  */
-class M3OpenCensusTracer() : M3Tracer {
+class M3OpenCensusTracer : M3Tracer {
     companion object {
         const val samplingSystemPropertyName = "m3.tracer.opencensus.sampling"
         const val samplingEnvVarName = "M3_TRACER_OPENCENSUS_SAMPLING"
+
+        private val logger = LoggerFactory.getLogger(M3OpenCensusTracer::class.java)
     }
 
     private val tracer = Tracing.getTracer()
@@ -22,10 +25,12 @@ class M3OpenCensusTracer() : M3Tracer {
 
     init {
         setupOpenCensus()
+        logger.info("Tracer started")
     }
 
     override fun close() {
         Tracing.getExportComponent().shutdown()
+        logger.info("Tracer closed")
     }
 
     private fun setupOpenCensus() {
@@ -42,4 +47,3 @@ class M3OpenCensusTracer() : M3Tracer {
             ?: System.getenv(samplingEnvVarName)
             ?: "never")
 }
-
