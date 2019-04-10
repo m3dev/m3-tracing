@@ -1,3 +1,6 @@
-include("common")
-
-project(":common").name = "java-common"
+include(
+        "core",
+        "opencensus",
+        "servlet",
+        "spring-boot", "spring-web"
+)

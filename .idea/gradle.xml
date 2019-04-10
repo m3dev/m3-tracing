@@ -8,7 +8,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/jvm" />
-            <option value="$PROJECT_DIR$/jvm/common" />
+            <option value="$PROJECT_DIR$/jvm/core" />
+            <option value="$PROJECT_DIR$/jvm/opencensus" />
+            <option value="$PROJECT_DIR$/jvm/servlet" />
+            <option value="$PROJECT_DIR$/jvm/spring-boot" />
+            <option value="$PROJECT_DIR$/jvm/spring-web" />
           </set>
         </option>
         <option name="useAutoImport" value="true" />

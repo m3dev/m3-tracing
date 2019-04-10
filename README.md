@@ -20,7 +20,7 @@ Distributed Tracing Wrapper Libraries.
 
 ## Feature matrix
 
-| Feature                                      | Java (java-common)                             | Spring                       | Play (Scala)            |
+| Feature                                      | Java (core)                             | Spring                       | Play (Scala)            |
 |---------------------------------------------:| -----------------------------------------------|------------------------------| ------------------------|
 | Supported runtime                            | JRE >= 8                                       | ( Same as Java )             | ( Same as Java )        |
 | Capture incoming HTTP request                | Servlet >= 4.0                                 | Spring Web                   | Play ?.?                |

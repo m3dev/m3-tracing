@@ -27,11 +27,9 @@ subprojects {
     val opencensusVersion by extra { "0.20.0" }
 
     dependencies {
-        compile(kotlin("stdlib"))
+        compile(kotlin("stdlib-jdk8"))
 
-        implementation("io.opencensus:opencensus-api:${project.extra["opencensusVersion"]}")
-        implementation("io.opencensus:opencensus-impl:${project.extra["opencensusVersion"]}")
-        testImplementation("io.opencensus:opencensus-exporter-trace-logging:${project.extra["opencensusVersion"]}")
+        implementation("com.google.code.findbugs:jsr305:3.0.2")
 
         implementation("org.slf4j:slf4j-api:1.7.26")
         testImplementation("org.slf4j:jul-to-slf4j:1.7.26")
