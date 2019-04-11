@@ -48,6 +48,7 @@ See [servlet/README](servlet/README.md).
 You can create span (element of trace) explicitly as like as:
 
 ```java
+// note: If you are using framework integration, may able to use DI (e.g. `@Autowired Tracer` in spring-boot)
 private static final Tracer tracer = M3TracerFactory.get();
 
 void yourMethod() {
@@ -56,6 +57,8 @@ void yourMethod() {
   }
 }
 ```
+
+Also you can set custom tag to the span with `Span#set(tagName, value)` method.
 
 ## Caution for thread / asynchronous operation
 

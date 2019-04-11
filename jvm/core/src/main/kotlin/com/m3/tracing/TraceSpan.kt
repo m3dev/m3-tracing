@@ -26,11 +26,11 @@ interface TraceSpan: AutoCloseable {
     fun startChildSpan(name: String): TraceSpan
 
     /** Set tag/attribute into this span. */
-    fun set(tagName: String, value: String?): TraceSpan
+    operator fun set(tagName: String, value: String?): TraceSpan
     /** Set tag/attribute into this span. */
-    fun set(tagName: String, value: Boolean?): TraceSpan
+    operator fun set(tagName: String, value: Boolean?): TraceSpan
     /** Set tag/attribute into this span. */
-    fun set(tagName: String, value: Int?): TraceSpan
+    operator fun set(tagName: String, value: Int?): TraceSpan
     /** Set tag/attribute into this span. */
-    fun set(tagName: String, value: Long?): TraceSpan
+    operator fun set(tagName: String, value: Long?): TraceSpan
 }

@@ -27,6 +27,9 @@ subprojects {
     apply(plugin = "maven-publish")
 
     val opencensusVersion by extra { "0.20.0" }
+    val servletApiVersion by extra { "3.0.1" }
+    val springWebVersion by extra { "5.1.6.RELEASE" }
+    val springBootVersion by extra { "2.1.4.RELEASE" } // spring-boot 2.1.4 -> spring-web 5.1.6
 
     dependencies {
         compile(kotlin("stdlib-jdk8"))

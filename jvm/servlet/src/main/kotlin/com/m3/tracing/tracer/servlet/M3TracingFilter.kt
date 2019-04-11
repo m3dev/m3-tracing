@@ -5,6 +5,7 @@ import com.m3.tracing.M3TracerFactory
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.annotation.concurrent.ThreadSafe
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -23,16 +24,45 @@ open class M3TracingFilter: Filter {
         private val logger = LoggerFactory.getLogger(M3TracingFilter::class.java)
     }
 
-    private var shutdownTracer: Boolean = true
+    private var initCalled = false
+    private var config: Config = Config()
+
+    @ThreadSafe
+    data class Config(
+            val tracer: M3Tracer = M3TracerFactory.get(),
+            val shutdownTracer: Boolean = true
+    ) {
+        companion object {
+            fun fromFilterConfig(filterConfig: FilterConfig) = Config(
+                    shutdownTracer = (filterConfig.getInitParameter("shutdown_tracer") ?: "true").toBoolean()
+            )
+        }
+    }
 
     @Throws(ServletException::class)
     override fun init(filterConfig: FilterConfig) {
-        shutdownTracer = (filterConfig.getInitParameter("shutdown_tracer") ?: "true").toBoolean()
+        if (this.initCalled) {
+            // Should ignore double-init.
+            // Especially for spring-boot, init(Config) is called to set config by-instance.
+            // Thus by-string based FilterConfig should be ignored.
+            return
+        }
+
+        this.initCalled = true
+        this.init(Config.fromFilterConfig(filterConfig))
+    }
+    fun init(config: Config) {
+        if (this.initCalled) {
+            return
+        }
+
+        this.initCalled = true
+        this.config = config
     }
 
     override fun destroy() {
-        if (shutdownTracer) {
-            tracer.close()
+        if (this.config.shutdownTracer) {
+            this.config.tracer.close()
         }
     }
 
@@ -48,7 +78,7 @@ open class M3TracingFilter: Filter {
         val chainInvoked = AtomicBoolean(false)
         var chainError: Throwable? = null
         try {
-            tracer.processIncomingHttpRequest(wrapRequest(req)).use { span ->
+            this.config.tracer.processIncomingHttpRequest(wrapRequest(req)).use { span ->
                 chainInvoked.set(true)
                 chainError = chain.doFilterAndCatch(rawReq, rawRes)
                 span.setError(chainError)
@@ -77,9 +107,6 @@ open class M3TracingFilter: Filter {
         }
         return null
     }
-
-    // Enable overriding for unittest
-    protected open val tracer: M3Tracer; get() = M3TracerFactory.get()
 
     protected open fun wrapRequest(req: HttpServletRequest) = ServletHttpRequestInfo(req)
     protected open fun wrapResponse(res: HttpServletResponse) = ServletHttpResponseInfo(res)
