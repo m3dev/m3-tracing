@@ -14,10 +14,12 @@ import org.springframework.http.client.ClientHttpResponse
 class M3TracingHttpRequestInterceptor(
         private val tracer: M3Tracer
 ): ClientHttpRequestInterceptor {
-
     override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
-        // TODO: Improve name of span. Include hostname (not entire URI). Be careful for error handling.
-        return tracer.startSpan("HTTP ${request.methodValue}").use { span ->
+        return tracer.startSpan(
+                // Excluded path & query because it might contain dynamic string
+                // Variable string makes huge span summary table and impact to system performance
+                "HTTP ${request.methodValue} ${request.uri.host}"
+        ).use { span ->
             span["client"] = "RestTemplate"
             span["method"] = request.methodValue
             span["uri"] = request.uri.toString()
