@@ -1,6 +1,6 @@
 # Servlet integration
 
-If you are using Spring Boot or Spring Framework, consider to use [spring-boot](../spring-boot) integration or [spring-web](../spring-web) integration.
+Note: If you are using Spring Boot or Spring Framework, consider to use [spring-boot](../spring-boot) integration or [spring-web](../spring-web) integration.
 
 ## Setvlet Filter setup
 

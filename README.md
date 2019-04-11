@@ -31,7 +31,7 @@ See [jvm/README](jvm/README.md).
 | Feature                                      | Java (core)                             | Spring                       | Play (Scala)            |
 |---------------------------------------------:| -----------------------------------------------|------------------------------| ------------------------|
 | Supported runtime                            | JRE >= 8                                       | ( Same as Java )             | ( Same as Java )        |
-| Capture incoming HTTP request                | Servlet >= 4.0                                 | Spring Web                   | Play ?.?                |
+| Capture incoming HTTP request                | Servlet >= 3.0.1                               | Spring Web                   | Play ?.?                |
 | Capture & Propagate to outgoing HTTP request | Commons HTTP client >= ?.?, async-http-client  | RestTemplate                 | ?????? (Play)           |
 | Capture database call                        | p6spy support for JDBC/RDBMS                   | ( Same as Java )             | ( Same as Java )        |
 | Multi-thread                                 | ( Custom context machanism )                   | ( Same as Java )             | Future wrapper (Play)   |
@@ -60,7 +60,7 @@ With this feature, this library yield spans for each database call.
 
 ## Feature: Multi-thread
 
-Whth this feature, this library wraps multi-thread (async) operations and propagate thread-bounded trace/span to threads.
+With this feature, this library wraps multi-thread (async) operations and propagate thread-bounded trace/span to threads.
 
 ## Feature: Log correlation
 

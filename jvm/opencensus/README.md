@@ -1,6 +1,6 @@
-# OpenCensus SDK setup
+# OpenCensus SDK
 
-## Sampling ratio (explicit setting required)
+## Sampling ratio setting (explicit setting required)
 
 You can controll sampling ratio of tracing. Higher sampling ratio covers most of incoming requests.
 
@@ -17,6 +17,10 @@ Possible values are:
 - `never`
 
 Default value is `never` to prevent unexpected traces, so that you need to specify value explicitly to enable tracing.
+
+## Side effect of `io.grpc.Context`
+
+If your application is using `io.grpc.Context`, please be careful because `opencensus-java` library effects it. `opencensus-java` need to share `io.grpc.Context` across threads if your application uses multi-thread / async programming. So that `opencensus-java` (and this wrapper library) effects `io.grpc.Context`.
 
 ## More information
 

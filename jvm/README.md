@@ -18,26 +18,62 @@ You need to specify tracing SDK to use.
 
 To use OpenCensus, specify `com.m3.tracing.tracer.opencensus.M3OpenCensusTracer` into `M3_TRACER_FQCN` environment variable or `m3.tracer.fqcn` JVM system property.
 
-By default, it uses `com.m3.tracing.tracer.logging.M3LoggingTracer` which is useful for local test but not useful for production.
+By default, it uses `com.m3.tracing.tracer.logging.M3LoggingTracer` that just output trace information into SLF4J logs. It is useful for local test or stubbing but not useful for production.
 
-See [M3TracerFactory](src/main/kotlin/com/m3/tracing/M3TracerFactory.kt) for detail of SDK loading.
+See [M3TracerFactory](core/src/main/kotlin/com/m3/tracing/M3TracerFactory.kt) for detail of SDK loading mechanism.
 
-### Setup SDK
+### Configure SDK
 
-For OpenCensus, see [opencensus/README](opencensus/README.md). You need to set sampling ration explicitly.
+To use OpenCensus, don't forget to look [opencensus/README](opencensus/README.md). You need to set sampling ration explicitly.
 
 ## Integrate with your application
 
 Setup one or some of following integrations:
 
-### Spring Boot
+### Spring Boot (`com.m3.tracing:spring-boot`)
 
 See [spring-boot/README](spring-boot/README.md).
 
-### Spring Framework without Spring Boot
+### Spring Framework without Spring Boot (`com.m3.tracing:spring-web`)
 
-See [spring-web/README](/README.md).
+See [spring-web/README](spring-web/README.md).
 
-### Servlet without any web framework
+### Servlet without any web framework (`com.m3.tracing:servlet`)
 
-See [servlet/README](/README.md).
+See [servlet/README](servlet/README.md).
+
+
+# Create span by manual
+
+You can create span (element of trace) explicitly as like as:
+
+```java
+private static final Tracer tracer = M3TracerFactory.get();
+
+void yourMethod() {
+  try(TraceSpan span = tracer.startSpan("do_something")){
+    // ... do anything you want ...
+  }
+}
+```
+
+## Caution for thread / asynchronous operation
+
+If your application perform operation over threads (e.g. using [Executor](https://docs.oracle.com/javase/jp/8/docs/api/java/util/concurrent/Executor.html), [Akka](https://akka.io/), ...), you need to propagate tracing context across threads.
+
+Although this library hides context propagation matter as possible, but you need to write a code like this:
+
+```java
+private static final Tracer tracer = M3TracerFactory.get();
+
+void yourMethod() {
+  // Parent thread should call getCurrentContext() before child thread's task.
+  final TraceContext traceContext = tracer.getCurrentContext();
+  executor.execute(() -> {
+    // In child thread, use traceContext.startChildSpan() to start span in the same context with parent
+    try(TraceSpan span = traceContext.startChildSpan("do_something")){
+      // ... do anything you want ...
+    }
+  });
+}
+```

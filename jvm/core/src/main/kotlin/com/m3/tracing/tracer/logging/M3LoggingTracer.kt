@@ -1,6 +1,7 @@
 package com.m3.tracing.tracer.logging
 
 import com.m3.tracing.M3Tracer
+import com.m3.tracing.TraceContext
 import com.m3.tracing.TraceSpan
 import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestSpan
@@ -36,7 +37,10 @@ class M3LoggingTracer: M3Tracer {
         override fun startChildSpan(name: String): TraceSpan = TraceSpanImpl(name)
     }
 
-    override fun startSpan(name: String): TraceSpan = TraceSpanImpl(name)
+    // This implementation holds nothing in thread local.
+    override val currentContext = object: TraceContext {
+        override fun startSpan(name: String): TraceSpan = TraceSpanImpl(name)
+    }
 
     private open class TraceSpanImpl(protected val name: String): TraceSpan {
         init {

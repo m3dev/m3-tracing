@@ -25,6 +25,7 @@ object M3TracerFactory {
 
     /**
      * Get instance of [M3Tracer].
+     * Always returns same instance.
      */
     fun get() = tracer
 

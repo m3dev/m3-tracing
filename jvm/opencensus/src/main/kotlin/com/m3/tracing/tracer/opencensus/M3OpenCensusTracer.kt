@@ -1,9 +1,14 @@
 package com.m3.tracing.tracer.opencensus
 
 import com.m3.tracing.M3Tracer
+import com.m3.tracing.TraceContext
 import com.m3.tracing.TraceSpan
 import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestSpan
+import io.grpc.Context
+import io.opencensus.common.Scope
+import io.opencensus.trace.Span
+import io.opencensus.trace.Tracer
 import io.opencensus.trace.Tracing
 import org.slf4j.LoggerFactory
 
@@ -42,21 +47,38 @@ class M3OpenCensusTracer : M3Tracer {
         }
     }
 
-    override fun startSpan(name: String): TraceSpan {
-        val currentSpan = TraceSpanImpl.getCurrent()
-        if (currentSpan != null) return currentSpan.startChildSpan(name)
-
-        val span = tracer.spanBuilder(name).startSpan()
-        return TraceSpanImpl.RootSpan(
-                tracer = tracer,
-                span = span,
-                scope = tracer.withSpan(span)
-        )
-    }
+    override val currentContext: TraceContext
+        get() = TraceContextImpl(tracer)
 
     override fun processIncomingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = httpRequestTracer.processRequest(request)
 
     private fun createSampler() = SamplerFactory.createSampler(System.getProperty(samplingSystemPropertyName)
             ?: System.getenv(samplingEnvVarName)
             ?: "never")
+}
+
+internal class TraceContextImpl(
+        private val tracer: Tracer,
+        private val context: Context = Context.current()
+): TraceContext {
+
+    override fun startSpan(name: String): TraceSpan {
+        val currentSpan = TraceSpanImpl.getCurrent(context)
+        if (currentSpan != null) return currentSpan.startChildSpan(name)
+
+        // Must be same context with parent.
+        // context.attach() must BEFORE tracer.withSpan because it set current span into current context.
+        val grpcContextDetachTo = context.attach()
+        val span = tracer.spanBuilder(name).startSpan()
+        val scope = tracer.withSpan(span)
+        return object: TraceSpanImpl(
+                parentSpan = null
+        ) {
+            override val tracer: Tracer = this@TraceContextImpl.tracer
+            override val grpcContext = this@TraceContextImpl.context
+            override val span: Span = span
+            override val scope: Scope = scope
+            override val grpcContextDetachTo = grpcContextDetachTo
+        }
+    }
 }

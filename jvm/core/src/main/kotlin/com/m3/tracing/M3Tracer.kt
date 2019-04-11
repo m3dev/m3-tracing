@@ -14,7 +14,7 @@ import javax.annotation.concurrent.ThreadSafe
  * - Must have default public constructor
  */
 @ThreadSafe
-interface M3Tracer: AutoCloseable {
+interface M3Tracer: AutoCloseable, TraceContext {
 
     /**
      * Shutdown tracer system.
@@ -30,15 +30,21 @@ interface M3Tracer: AutoCloseable {
     fun processIncomingHttpRequest(request: HttpRequestInfo): HttpRequestSpan
 
     /**
+     * Returns context bound to current thread / call stack.
+     *
+     * When you get this object, it saves [TraceSpan] state of current thread / call stack.
+     * With using `currentThreadContext.startSpan`, you can propagate span to another thread.
+     */
+    val currentContext: TraceContext
+
+    /**
      * Start a new span in current thread / call stack.
+     *
+     * If your logic run across multiple threads, use [currentContext] rather than this.
+     *
      * Call this method before your logic and call [TraceSpan.close] in the end of your logic.
      * MUST close resulted span in the end of your logic.
      * Consider to use try-with-resources (Java) or `use` method (Kotlin).
-     *
-     * If your logic run in child thread / worker thread, call this method within the child thread (not in the parent thread).
-     *
-     * This method creates child span if there is a running span in this thread (behave same as [TraceSpan.startChildSpan]).
      */
-    @CheckReturnValue // Caller must close the new span
-    fun startSpan(name: String): TraceSpan
+    override fun startSpan(name: String): TraceSpan = currentContext.startSpan(name)
 }

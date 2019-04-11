@@ -21,7 +21,7 @@ internal abstract class TraceSpanImpl(
         private val currentSpanKey = Context.key<TraceSpanImpl>("${TraceSpanImpl::class.java.name}#current")
 
         /** Get current TraceSpan (of current thread / call stack) */
-        internal fun getCurrent(): TraceSpanImpl? = currentSpanKey.get()
+        internal fun getCurrent(context: Context): TraceSpanImpl? = currentSpanKey.get(context)
     }
 
     protected abstract val tracer: Tracer
@@ -104,14 +104,5 @@ internal abstract class TraceSpanImpl(
             override val grpcContextDetachTo: Context?
     ): TraceSpanImpl(parentSpan) {
         override val tracer: Tracer = parentSpan.tracer
-    }
-
-    class RootSpan(
-            override val tracer: Tracer,
-            override val span: Span,
-            override val scope: Scope,
-            override val grpcContext: Context = Context.current()
-    ): TraceSpanImpl(null){
-        override val grpcContextDetachTo = null
     }
 }

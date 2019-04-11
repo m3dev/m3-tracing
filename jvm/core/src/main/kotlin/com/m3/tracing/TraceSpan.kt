@@ -18,20 +18,7 @@ interface TraceSpan: AutoCloseable {
      *
      * This method is thread-safe.
      * If the child span run in different thread from this span, must call this method from child thread.
-     *
-     * Multi-thread example:
-     *
-     * ```java
-     * TraceSpan parentSpan;
-     * Executor executor;
-     *
-     * executor.execute {
-     *    // childSpan() method must be called in worker thread (not outside of executor).
-     *    try(TraceSpan span = parentSpan.startChildSpan("do_something")){
-     *        // ... do something ...
-     *    }
-     * }
-     * ```
+     * See jvm/README.md for detail.
      *
      * @return Child span. Do NOT forget to close resulted span.
      */
