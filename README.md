@@ -4,17 +4,19 @@ Distributed Tracing Wrapper Libraries.
 
 - Provide unified/tested set of libraries
   - No need to load/maintain various `contrib` libraries
-- Provide high-level wrapper
-  - No need to know detail of each tracing SDK
+- Provide high-level & simple interface over tracing standard APIs (e.g. OpenCensus)
+  - No need to know detail of API
+  - Provides simple interface
+  - Hide complicated object lifecycle of APIs (hide error prone things from you)
 
 # Non-goal of this libraries
 
-- Do not aim to `agent` support, _you need to activate/call this library explicitly_
+- Do not aim to provide `agent`, _you need to activate/call this library explicitly_
   - Do not prefer to use dynamic code rewriting / monkey patching to minimize risk
   - To use feature of this library, please explicitly call/enable them
-- Do not aim to support all libraries (HTTP client library, logging library, ...) in the world
+- Do not aim to support all libraries in the world (HTTP client library, logging library, ...)
   - Focus on use case in our company.
-  - If you want to add library support, fork this.
+  - If you want to add library support, feel free to fork this.
 
 # Features
 

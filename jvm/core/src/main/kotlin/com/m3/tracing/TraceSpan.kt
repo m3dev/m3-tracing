@@ -2,6 +2,9 @@ package com.m3.tracing
 
 import javax.annotation.CheckReturnValue
 
+/**
+ * This object is NOT thread-safe expect for some methods.
+ */
 interface TraceSpan: AutoCloseable {
 
     /**
@@ -13,7 +16,8 @@ interface TraceSpan: AutoCloseable {
     /**
      * Create child span.
      *
-     * If this span run in different thread from parent span, must call this method from child thread.
+     * This method is thread-safe.
+     * If the child span run in different thread from this span, must call this method from child thread.
      *
      * Multi-thread example:
      *
@@ -31,7 +35,7 @@ interface TraceSpan: AutoCloseable {
      *
      * @return Child span. Do NOT forget to close resulted span.
      */
-    @CheckReturnValue
+    @CheckReturnValue // Caller must close the new span
     fun startChildSpan(name: String): TraceSpan
 
     /** Set tag/attribute into this span. */

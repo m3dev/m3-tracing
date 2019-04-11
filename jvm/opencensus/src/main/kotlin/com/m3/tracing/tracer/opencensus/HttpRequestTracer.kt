@@ -20,7 +20,9 @@ internal class HttpRequestTracer(
     private val extractor = ExtractorImpl()
     private val handler = HttpServerHandler(tracer, extractor, textFormat, getter, true)
 
-    fun processRequest(request: HttpRequestInfo) = HttpRequestSpanImpl(handler, tracer, request)
+    fun processRequest(request: HttpRequestInfo) = HttpRequestSpanImpl(handler, tracer, request).also {
+        it.init()
+    }
 }
 
 internal class HttpRequestSpanImpl(
