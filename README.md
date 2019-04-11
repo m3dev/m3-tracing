@@ -18,6 +18,12 @@ Distributed Tracing Wrapper Libraries.
   - Focus on use case in our company.
   - If you want to add library support, feel free to fork this.
 
+# How to start
+
+## Java
+
+See [jvm/README](jvm/README.md).
+
 # Features
 
 ## Feature matrix

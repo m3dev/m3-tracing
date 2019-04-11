@@ -1,6 +1,7 @@
 package com.m3.tracing.tracer.opencensus
 
 import com.m3.tracing.M3Tracer
+import com.m3.tracing.TraceSpan
 import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestSpan
 import io.opencensus.trace.Tracing
@@ -39,6 +40,18 @@ class M3OpenCensusTracer : M3Tracer {
                     traceConfig.activeTraceParams.toBuilder().setSampler(sampler).build()
             )
         }
+    }
+
+    override fun startSpan(name: String): TraceSpan {
+        val currentSpan = TraceSpanImpl.getCurrent()
+        if (currentSpan != null) return currentSpan.startChildSpan(name)
+
+        val span = tracer.spanBuilder(name).startSpan()
+        return TraceSpanImpl.RootSpan(
+                tracer = tracer,
+                span = span,
+                scope = tracer.withSpan(span)
+        )
     }
 
     override fun processIncomingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = httpRequestTracer.processRequest(request)

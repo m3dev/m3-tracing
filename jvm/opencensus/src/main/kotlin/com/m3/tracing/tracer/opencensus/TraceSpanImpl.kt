@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 
 
 /** When creating this instance, must call [init] method also. */
-abstract class TraceSpanImpl(
+internal abstract class TraceSpanImpl(
         private val parentSpan: TraceSpanImpl?
 ): TraceSpan {
     companion object {
@@ -26,7 +26,7 @@ abstract class TraceSpanImpl(
 
     protected abstract val tracer: Tracer
     protected abstract val span: Span
-    /** OpenCensus Scope bound to the span. */
+    /** OpenCensus Scope bound to the span. Creator of this object must enter to the scope. */
     protected abstract val scope: Scope?
     /** OpenCensus context (OpenCensuse uses gRPC context) bound to this trace/span. This context must be same with [Context.current()] during this span. */
     protected abstract val grpcContext: Context
@@ -48,12 +48,10 @@ abstract class TraceSpanImpl(
     }
 
     override fun close() {
+        closeQuietly { innerContext.detach(grpcContext) }
         closeQuietly { scope?.close() } // note: Scope.close not always closes span. Should close span also.
         closeQuietly { span.end(EndSpanOptions.DEFAULT) }
-        closeQuietly {
-            innerContext.detach(grpcContext)
-            if (grpcContextDetachTo != null) { grpcContext.detach(grpcContextDetachTo) }
-        }
+        closeQuietly { if (grpcContextDetachTo != null) { grpcContext.detach(grpcContextDetachTo) } }
     }
 
     override fun startChildSpan(name: String): TraceSpan {
@@ -100,9 +98,20 @@ abstract class TraceSpanImpl(
             parentSpan: TraceSpanImpl,
             override val span: Span,
             override val scope: Scope?,
+            // Note should not inherit parent.context.
+            // Because each scope makes new gRPC context, each span/scope bound to different context.
+            override val grpcContext: Context = Context.current(),
             override val grpcContextDetachTo: Context?
     ): TraceSpanImpl(parentSpan) {
         override val tracer: Tracer = parentSpan.tracer
-        override val grpcContext: Context = parentSpan.grpcContext
+    }
+
+    class RootSpan(
+            override val tracer: Tracer,
+            override val span: Span,
+            override val scope: Scope,
+            override val grpcContext: Context = Context.current()
+    ): TraceSpanImpl(null){
+        override val grpcContextDetachTo = null
     }
 }

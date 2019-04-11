@@ -32,7 +32,11 @@ class M3LoggingTracer: M3Tracer {
                 output.info("Error captured in request ${request.url}: $e")
             }
         }
+
+        override fun startChildSpan(name: String): TraceSpan = TraceSpanImpl(name)
     }
+
+    override fun startSpan(name: String): TraceSpan = TraceSpanImpl(name)
 
     private open class TraceSpanImpl(protected val name: String): TraceSpan {
         init {

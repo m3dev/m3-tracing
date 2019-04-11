@@ -12,6 +12,7 @@ internal object SamplerFactory {
             "always" -> return Samplers.alwaysSample()
             "never" -> return Samplers.neverSample()
             else -> {
+                // Must be within [0.0, 1.0]
                 val ratio = config.toDoubleOrNull()
                 if (ratio != null) {
                     return Samplers.probabilitySampler(ratio)
