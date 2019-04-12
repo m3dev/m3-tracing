@@ -5,6 +5,7 @@ import com.m3.tracing.TraceContext
 import com.m3.tracing.TraceSpan
 import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestSpan
+import com.m3.tracing.internal.Config
 import io.grpc.Context
 import io.opencensus.common.Scope
 import io.opencensus.trace.Span
@@ -18,8 +19,7 @@ import org.slf4j.LoggerFactory
  */
 class M3OpenCensusTracer : M3Tracer {
     companion object {
-        const val samplingSystemPropertyName = "m3.tracer.opencensus.sampling"
-        const val samplingEnvVarName = "M3_TRACER_OPENCENSUS_SAMPLING"
+        const val samplingConfigName = "m3.tracer.opencensus.sampling"
 
         private val logger = LoggerFactory.getLogger(M3OpenCensusTracer::class.java)
     }
@@ -52,9 +52,9 @@ class M3OpenCensusTracer : M3Tracer {
 
     override fun processIncomingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = httpRequestTracer.processRequest(request)
 
-    private fun createSampler() = SamplerFactory.createSampler(System.getProperty(samplingSystemPropertyName)
-            ?: System.getenv(samplingEnvVarName)
-            ?: "never")
+    private fun createSampler() = SamplerFactory.createSampler(
+            Config[samplingConfigName] ?: "never"
+    )
 }
 
 internal class TraceContextImpl(

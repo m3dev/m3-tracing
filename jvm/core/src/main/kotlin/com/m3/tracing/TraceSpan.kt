@@ -25,6 +25,16 @@ interface TraceSpan: AutoCloseable {
     @CheckReturnValue // Caller must close the new span
     fun startChildSpan(name: String): TraceSpan
 
+    /**
+     * If exception raised while this span, should set this property.
+     */
+    fun setError(e: Throwable?) {
+        if (e != null) {
+            this["exception_class"] = e.javaClass.name
+            this["exception_messsage"] = e.message
+        }
+    }
+
     /** Set tag/attribute into this span. */
     operator fun set(tagName: String, value: String?): TraceSpan
     /** Set tag/attribute into this span. */

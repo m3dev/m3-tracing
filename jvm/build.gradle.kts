@@ -49,9 +49,9 @@ subprojects {
             maven {
                 // change to point to your repo, e.g. http://my.org/repo
                 if (version.toString().endsWith("SNAPSHOT")) {
-                    url = uri("http://maven:8081/artifactory/libs-releases")
-                } else {
                     url = uri("http://maven:8081/artifactory/libs-snapshots")
+                } else {
+                    url = uri("http://maven:8081/artifactory/libs-releases")
                 }
             }
         }

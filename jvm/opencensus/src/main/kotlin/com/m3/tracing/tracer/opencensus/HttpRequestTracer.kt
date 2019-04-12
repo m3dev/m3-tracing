@@ -48,10 +48,8 @@ internal class HttpRequestSpanImpl(
 
     private var error: Throwable? = null
     override fun setError(e: Throwable?) {
-        if (e != null) {
-            this.error = e
-            span.saveException(e)
-        }
+        super<TraceSpanImpl>.setError(e)
+        this.error = e
     }
 
     private var response: HttpResponseInfo? = null

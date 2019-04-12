@@ -1,7 +1,6 @@
 package com.m3.tracing
 
-import com.m3.tracing.M3TracerFactory.tracerFQCNEnvVarName
-import com.m3.tracing.M3TracerFactory.tracerFQCNSystemPropertyName
+import com.m3.tracing.internal.Config
 import com.m3.tracing.tracer.logging.M3LoggingTracer
 import org.slf4j.LoggerFactory
 import javax.annotation.concurrent.ThreadSafe
@@ -10,13 +9,12 @@ import javax.annotation.concurrent.ThreadSafe
  * Singleton factory/holder of [M3Tracer] instance.
  *
  * To choose [M3Tracer] implementation, use one of following methods:
- * 1. Set FQCN of [M3Tracer] implementation in system property ([tracerFQCNSystemPropertyName])
- * 2. Set FQCN of [M3Tracer] implementation in environment variable ([tracerFQCNEnvVarName])
+ * 1. Set FQCN of [M3Tracer] implementation in system property
+ * 2. Set FQCN of [M3Tracer] implementation in environment variable
  */
 @ThreadSafe
 object M3TracerFactory {
-    private const val tracerFQCNSystemPropertyName = "m3.tracer.fqcn"
-    private const val tracerFQCNEnvVarName = "M3_TRACER_FQCN"
+    private const val tracerFQCNConfigName = "m3.tracer.fqcn"
 
     private val logger = LoggerFactory.getLogger(M3TracerFactory::class.java)
 
@@ -30,8 +28,7 @@ object M3TracerFactory {
     fun get() = tracer
 
     private fun createTracer(): M3Tracer {
-        return createTracerByFQCN(System.getProperty(tracerFQCNSystemPropertyName))
-                ?: createTracerByFQCN(System.getenv(tracerFQCNEnvVarName))
+        return createTracerByFQCN(Config[tracerFQCNConfigName])
                 ?: M3LoggingTracer()
     }
     private fun createTracerByFQCN(fqcn: String?): M3Tracer? {

@@ -10,7 +10,10 @@ dependencies {
     api(project(":spring-web"))
     api(project(":servlet"))
 
-    implementation("javax.servlet:javax.servlet-api:${project.extra["servletApiVersion"]}")
+    // Caution: Should not expose this dependency to publised POM to avoid overriding servlet-api dependency from spring-boot.
+    compileOnly("javax.servlet:javax.servlet-api:${project.extra["servletApiVersion"]}")
+
+    implementation("org.springframework:spring-web:${project.extra["springWebVersion"]}")
     implementation("org.springframework.boot:spring-boot:${project.extra["springBootVersion"]}")
     implementation("org.springframework.boot:spring-boot-autoconfigure:${project.extra["springBootVersion"]}")
 }
