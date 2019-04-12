@@ -74,8 +74,12 @@ You can create span (element of trace) explicitly as like as:
 private static final Tracer tracer = M3TracerFactory.get();
 
 void yourMethod() {
+  // You MUST close span to prevent memory leak.
+  // Recommend to use try-with-resources (Java) or use (Kotlin).
   try(TraceSpan span = tracer.startSpan("do_something")){
     // ... do anything you want ...
+
+    span.set("name_of_tag", "foobarbaz"); // You can set tag to the Span
   }
 }
 ```
