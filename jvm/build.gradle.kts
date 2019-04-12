@@ -27,9 +27,15 @@ subprojects {
     apply(plugin = "maven-publish")
 
     val opencensusVersion by extra { "0.20.0" }
+
+    //Intentionally support Servlet API 3.0
+    //Intentionally support Servlet API 3.0
     val servletApiVersion by extra { "3.0.1" }
+
+    // Following versions are based on spring-boot
+    val springBootVersion by extra { "2.1.4.RELEASE" }
     val springWebVersion by extra { "5.1.6.RELEASE" }
-    val springBootVersion by extra { "2.1.4.RELEASE" } // spring-boot 2.1.4 -> spring-web 5.1.6
+    val apacheHttpClientVersion by extra { "4.5.8" }
 
     dependencies {
         compile(kotlin("stdlib-jdk8"))

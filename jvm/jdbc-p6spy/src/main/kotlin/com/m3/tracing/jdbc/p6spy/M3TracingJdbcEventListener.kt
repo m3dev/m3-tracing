@@ -24,6 +24,8 @@ open class M3TracingJdbcEventListener: SimpleJdbcEventListener() {
 
     override fun onAfterAnyExecute(statementInformation: StatementInformation, timeElapsedNanos: Long, e: SQLException?) {
         val span = currentSpan.get() ?: return
+        currentSpan.set(null) // Prevent ClassLoader leak
+
         doQuietly { // Must proceed to close() statement to prevent leak
             span["time_elapsed_nanos"] = timeElapsedNanos
             if (e != null) {
@@ -37,7 +39,7 @@ open class M3TracingJdbcEventListener: SimpleJdbcEventListener() {
     /**
      * `On Error Resume Next` in 21st century.
      */
-    protected inline fun doQuietly(action: () -> Unit) {
+    protected fun doQuietly(action: () -> Unit) {
         try {
             action()
         } catch (e: Throwable) {
