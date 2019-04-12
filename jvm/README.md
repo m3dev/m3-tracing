@@ -5,10 +5,10 @@
 Load following libraries:
 
 - `com.m3.tracing:core`
-- `com.m3.tracing:opencensus`
-- `com.m3.tracing:spring-boot` (If you are using Spring Boot)
-- `com.m3.tracing:spring-web` (If you are using Spring Framework without Spring Boot)
-- `com.m3.tracing:servlet` (If you are using Java Servlet without any web framework)
+- `com.m3.tracing:opencensus`(If you want to use OpenCensus)
+
+And there are framework/library integrations, describe later.
+
 
 ## Initialization
 
@@ -26,21 +26,43 @@ See [M3TracerFactory](core/src/main/kotlin/com/m3/tracing/M3TracerFactory.kt) fo
 
 To use OpenCensus, don't forget to look [opencensus/README](opencensus/README.md). You need to set sampling ration explicitly.
 
-## Integrate with your application
+## Integrate with application framework
 
 Setup one or some of following integrations:
 
-### Spring Boot (`com.m3.tracing:spring-boot`)
+### Spring Boot
 
-See [spring-boot/README](spring-boot/README.md).
+Load `com.m3.tracing:spring-boot` dependency.
+
+It traces incoming HTTP request, outgoing HTTP request (with `RestTemplate`) and so on.
+
+See [spring-boot/README](spring-boot/README.md) how to use it.
 
 ### Spring Framework without Spring Boot (`com.m3.tracing:spring-web`)
 
-See [spring-web/README](spring-web/README.md).
+Load `com.m3.tracing:spring-web` dependency.
+
+See [spring-web/README](spring-web/README.md) how to use it.
 
 ### Servlet without any web framework (`com.m3.tracing:servlet`)
 
-See [servlet/README](servlet/README.md).
+Load `com.m3.tracing:serlvet` dependency.
+
+See [servlet/README](servlet/README.md) how to use it.
+
+## Integrate with libraries
+
+### JDBC (trace SQLs of RDBMS)
+
+You can use `com.m3.tracing:jdbc-p6spy` to capture SQLs via any JDBC driver.
+
+See [jdbc-p6spy/README](jdbc-p6spy/README.md) how to use it.
+
+### Apache HttpClient
+
+You can use `com.m3.tracing:apache-httpclient` to trace outgoing HTTP request of Apache HttpClient.
+
+See [apache-httpclient/README](apache-httpclient/README.md) how to use it.
 
 
 # Create span by manual
