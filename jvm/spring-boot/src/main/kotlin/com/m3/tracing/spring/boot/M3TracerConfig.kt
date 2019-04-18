@@ -2,6 +2,7 @@ package com.m3.tracing.spring.boot
 
 import com.m3.tracing.M3Tracer
 import com.m3.tracing.M3TracerFactory
+import com.m3.tracing.spring.boot.aop.M3TracedAspect
 import com.m3.tracing.spring.boot.web.client.M3TracerRestTemplateConfig
 import com.m3.tracing.tracer.servlet.M3TracingFilter
 import org.springframework.beans.factory.annotation.Value
@@ -31,6 +32,15 @@ class M3TracerConfig {
     @Bean
     @ConditionalOnMissingBean
     fun m3Tracer() = M3TracerFactory.get()
+
+    /**
+     * You can trace method calls with [com.m3.tracing.annotation.M3Traced] annotation.
+     *
+     * Note that only DI (AOP) managed objects are traced.
+     * Direct method call (such as `new Something().call()`) cannot be traced due to lack of AOP proxy.
+     */
+    @Bean
+    fun m3TracedAspect(tracer: M3Tracer) = M3TracedAspect(tracer)
 
     /**
      * Configure [M3TracingFilter] with DI / spring way, rather than Servlet way.
