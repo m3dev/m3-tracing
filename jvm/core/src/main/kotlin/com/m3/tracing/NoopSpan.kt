@@ -10,6 +10,5 @@ object NoopSpan: TraceSpan {
 
     override fun set(tagName: String, value: String?): TraceSpan { return this }
     override fun set(tagName: String, value: Boolean?): TraceSpan { return this }
-    override fun set(tagName: String, value: Int?): TraceSpan { return this }
     override fun set(tagName: String, value: Long?): TraceSpan { return this }
 }

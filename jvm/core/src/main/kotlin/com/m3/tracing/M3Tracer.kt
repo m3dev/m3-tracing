@@ -46,5 +46,6 @@ interface M3Tracer: AutoCloseable, TraceContext {
      * MUST close resulted span in the end of your logic.
      * Consider to use try-with-resources (Java) or `use` method (Kotlin).
      */
+    @JvmDefault
     override fun startSpan(name: String): TraceSpan = currentContext.startSpan(name)
 }

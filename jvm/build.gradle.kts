@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     base
     java
@@ -26,6 +28,12 @@ subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
 
+    tasks.withType<KotlinCompile> {
+        kotlinOptions.javaParameters = true
+        kotlinOptions.freeCompilerArgs = listOf("-Xprogressive", "-Xjvm-default=enable")
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
     val opencensusVersion by extra { "0.20.0" }
 
     //Intentionally support Servlet API 3.0
@@ -34,13 +42,14 @@ subprojects {
 
     // Following versions are based on spring-boot
     val springBootVersion by extra { "2.1.4.RELEASE" }
-    val springWebVersion by extra { "5.1.6.RELEASE" }
+    val springVersion by extra { "5.1.6.RELEASE" }
     val apacheHttpClientVersion by extra { "4.5.8" }
 
     dependencies {
         compile(kotlin("stdlib-jdk8"))
 
         implementation("com.google.code.findbugs:jsr305:3.0.2")
+        implementation("com.google.guava:guava:27.1-jre")
 
         implementation("org.slf4j:slf4j-api:1.7.26")
         testImplementation("org.slf4j:jul-to-slf4j:1.7.26")
@@ -48,6 +57,9 @@ subprojects {
 
         testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
         testImplementation("org.mockito:mockito-junit-jupiter:2.26.0")
+        testImplementation("org.mockito:mockito-core:2.27.0")
+        testImplementation("com.google.truth:truth:0.44")
+        testImplementation("com.google.truth.extensions:truth-java8-extension:0.44")
     }
 
     publishing {

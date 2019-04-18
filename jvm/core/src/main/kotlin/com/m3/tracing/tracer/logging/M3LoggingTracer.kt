@@ -57,7 +57,6 @@ class M3LoggingTracer: M3Tracer {
         private val tags = mutableMapOf<String, Any?>()
         override fun set(tagName: String, value: String?): TraceSpan { tags[tagName] = value; return this }
         override fun set(tagName: String, value: Boolean?): TraceSpan { tags[tagName] = value; return this }
-        override fun set(tagName: String, value: Int?): TraceSpan { tags[tagName] = value; return this }
         override fun set(tagName: String, value: Long?): TraceSpan { tags[tagName] = value; return this }
     }
 }

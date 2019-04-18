@@ -28,6 +28,7 @@ interface TraceSpan: AutoCloseable {
     /**
      * If exception raised while this span, should set this property.
      */
+    @JvmDefault
     fun setError(e: Throwable?) {
         if (e != null) {
             this["exception_class"] = e.javaClass.name
@@ -40,7 +41,14 @@ interface TraceSpan: AutoCloseable {
     /** Set tag/attribute into this span. */
     operator fun set(tagName: String, value: Boolean?): TraceSpan
     /** Set tag/attribute into this span. */
-    operator fun set(tagName: String, value: Int?): TraceSpan
-    /** Set tag/attribute into this span. */
     operator fun set(tagName: String, value: Long?): TraceSpan
+    /** Set tag/attribute into this span. */
+    @JvmDefault
+    operator fun set(tagName: String, value: Any?) = when(value) {
+        null -> this
+        is String -> set(tagName, value)
+        is Boolean -> set(tagName, value)
+        is Long -> set(tagName, value)
+        else -> set(tagName, "$value")
+    }
 }

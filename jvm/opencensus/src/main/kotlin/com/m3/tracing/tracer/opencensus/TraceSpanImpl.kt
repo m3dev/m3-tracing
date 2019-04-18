@@ -91,7 +91,6 @@ internal abstract class TraceSpanImpl(
 
     override fun set(tagName: String, value: String?): TraceSpan { if (value != null) span.putAttribute(tagName, AttributeValue.stringAttributeValue(value)); return this }
     override fun set(tagName: String, value: Boolean?): TraceSpan { if (value != null) span.putAttribute(tagName, AttributeValue.booleanAttributeValue(value)); return this }
-    override fun set(tagName: String, value: Int?): TraceSpan { if (value != null) span.putAttribute(tagName, AttributeValue.longAttributeValue(value.toLong())); return this }
     override fun set(tagName: String, value: Long?): TraceSpan { if (value != null) span.putAttribute(tagName, AttributeValue.longAttributeValue(value)); return this }
 
     class NonRootSpan(
