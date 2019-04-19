@@ -1,5 +1,6 @@
 package com.m3.tracing.tracer.opencensus
 
+import com.google.common.annotations.VisibleForTesting
 import com.m3.tracing.http.*
 import io.grpc.Context
 import io.opencensus.common.Scope
@@ -12,13 +13,16 @@ internal class HttpRequestTracer(
         private val tracer: Tracer,
         private val textFormat: TextFormat
 ) {
-    private val getter = object: TextFormat.Getter<HttpRequestInfo>() {
+    @VisibleForTesting
+    internal val getter = object: TextFormat.Getter<HttpRequestInfo>() {
         override fun get(carrier: HttpRequestInfo, key: String): String? {
             return carrier.tryGetHeader(key)
         }
     }
-    private val extractor = ExtractorImpl()
-    private val handler = HttpServerHandler(tracer, extractor, textFormat, getter, true)
+    @VisibleForTesting
+    internal val extractor = ExtractorImpl()
+    @VisibleForTesting
+    internal val handler = HttpServerHandler(tracer, extractor, textFormat, getter, true)
 
     fun processRequest(request: HttpRequestInfo) = HttpRequestSpanImpl(handler, tracer, request).also {
         it.init()
@@ -41,18 +45,19 @@ internal class HttpRequestSpanImpl(
         }
     }
 
-    override val grpcContext = Context.current()
-    override val grpcContextDetachTo: Context? get() = null
+    override val scopeParentContext: Context? get() = null
     override val span = handler.getSpanFromContext(context)
     override val scope: Scope? = tracer.withSpan(span)
 
-    private var error: Throwable? = null
+    @VisibleForTesting
+    internal var error: Throwable? = null
     override fun setError(e: Throwable?) {
         super<TraceSpanImpl>.setError(e)
         this.error = e
     }
 
-    private var response: HttpResponseInfo? = null
+    @VisibleForTesting
+    internal var response: HttpResponseInfo? = null
     override fun setResponse(response: HttpResponseInfo) {
         this.response = response
     }

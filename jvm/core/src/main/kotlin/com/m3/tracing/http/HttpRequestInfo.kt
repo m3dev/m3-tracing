@@ -14,6 +14,7 @@ interface HttpRequestInfo {
      */
     fun <T> tryGetMetadata(key: HttpRequestMetadataKey<T>): T?
 
+    @JvmDefault
     val url: String?; get() = this.tryGetMetadata(HttpRequestMetadataKey.Url)
 
     /**

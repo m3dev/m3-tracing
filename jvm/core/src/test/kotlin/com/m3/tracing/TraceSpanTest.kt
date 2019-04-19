@@ -32,12 +32,18 @@ class TraceSpanTest {
 
     @Test
     fun `set(String, Object) must set tag`() {
-        mockSpan["string_tag"] = "string value"
-        mockSpan["boolean_tag"] = true
-        mockSpan["long_tag"] = 1234L
+        mockSpan["string_tag"] = "string value" as Any?
+        mockSpan["boolean_tag"] = true as Any?
+        mockSpan["long_tag"] = 1234L as Any?
+        mockSpan["object"] = object: object {
+            override fun toString(): String {
+                return "Overriden toString()"
+            }
+        }
 
         Mockito.verify(mockSpan).set("string_tag", "string value")
         Mockito.verify(mockSpan).set("boolean_tag", true)
         Mockito.verify(mockSpan).set("long_tag", 1234L)
+        Mockito.verify(mockSpan).set("object", "Overriden toString()")
     }
 }

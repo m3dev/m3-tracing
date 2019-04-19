@@ -58,6 +58,7 @@ subprojects {
         testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
         testImplementation("org.mockito:mockito-junit-jupiter:2.26.0")
         testImplementation("org.mockito:mockito-core:2.27.0")
+        testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
         testImplementation("com.google.truth:truth:0.44")
         testImplementation("com.google.truth.extensions:truth-java8-extension:0.44")
     }

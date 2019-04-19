@@ -22,46 +22,53 @@ internal abstract class TraceSpanImpl(
 
         /** Get current TraceSpan (of current thread / call stack) */
         internal fun getCurrent(context: Context): TraceSpanImpl? = currentSpanKey.get(context)
+
+        internal fun closeQuietly(action: () -> Unit) {
+            try {
+                action()
+            } catch (e: Throwable) {
+                logger.error("Failed to cleanup tracing. Might cause memory leak.", e)
+            }
+        }
     }
 
     protected abstract val tracer: Tracer
     protected abstract val span: Span
-    /** OpenCensus Scope bound to the span. Creator of this object must enter to the scope. */
+
+    /** OpenCensus Scope bound to the span. Creator of this object must enter to the scope.
+     * Note that OpenCensuse [Scope] itself _MAY_ create gRPC context, or may not.
+     */
     protected abstract val scope: Scope?
-    /** OpenCensus context (OpenCensuse uses gRPC context) bound to this trace/span. This context must be same with [Context.current()] during this span. */
-    protected abstract val grpcContext: Context
-    /** If not null, call `detach(grpcContextDetachTo)` in the end of this span. */
-    protected abstract val grpcContextDetachTo: Context?
+    /** gRPC context that is parent of gRPC context of the span. If this is given, close it on the end of this span. */
+    protected abstract val scopeParentContext: Context?
 
     /** To set [currentSpanKey], this TraceSpan also creates "inner" context. */
     private lateinit var innerContext: Context
+    /** gRPC context that is parent of [innerContext] */
+    private lateinit var innerContextParentContext: Context
 
     private val threadID = Thread.currentThread().id
 
     fun init() {
-        innerContext = grpcContext.withValue(currentSpanKey, this)
-        if (innerContext.attach() != grpcContext) {
-            // grpcContext should be current context.
-            // Because Context#attach() returns current context, this mismatch means bug.
-            logger.error("(Potential bug) grpcContext != current context, it means caller of TraceSpanImpl did not set grpcContext properly.")
-        }
+        innerContext = Context.current().withValue(currentSpanKey, this)
+        innerContextParentContext = innerContext.attach()
     }
 
     override fun close() {
-        closeQuietly { innerContext.detach(grpcContext) }
+        closeQuietly { innerContext.detach(innerContextParentContext) }
         closeQuietly { scope?.close() } // note: Scope.close not always closes span. Should close span also.
         closeQuietly { span.end(EndSpanOptions.DEFAULT) }
-        closeQuietly { if (grpcContextDetachTo != null) { grpcContext.detach(grpcContextDetachTo) } }
+        closeQuietly { if (scopeParentContext != null) { Context.current().detach(scopeParentContext) } }
     }
 
     override fun startChildSpan(name: String): TraceSpan {
         try {
-            val grpcContextDetachTo = if (parentSpan != null && parentSpan.threadID != this.threadID) {
+            val scopeParentContext = if (this.threadID != Thread.currentThread().id) {
                 // Need to attach gRPC context to propagate OpenCensus context from parent thread
                 // see: https://github.com/GoogleCloudPlatform/cloud-trace-java/issues/85#issuecomment-440402234
                 //
                 // This attach() call must BEFORE span creation.
-                grpcContext.attach()
+                innerContext.attach()
             } else {
                 null
             }
@@ -71,21 +78,13 @@ internal abstract class TraceSpanImpl(
                     parentSpan = this,
                     span = span,
                     scope = scope,
-                    grpcContextDetachTo = grpcContextDetachTo
+                    scopeParentContext = scopeParentContext
             ).also {
                 it.init()
             }
         } catch (e: Throwable) {
             logger.error("Failed to startChildSpan", e)
             return NoopSpan
-        }
-    }
-
-    protected fun closeQuietly(action: () -> Unit) {
-        try {
-            action()
-        } catch (e: Throwable) {
-            logger.error("Failed to cleanup tracing. Might cause memory leak.", e)
         }
     }
 
@@ -97,10 +96,7 @@ internal abstract class TraceSpanImpl(
             parentSpan: TraceSpanImpl,
             override val span: Span,
             override val scope: Scope?,
-            // Note should not inherit parent.context.
-            // Because each scope makes new gRPC context, each span/scope bound to different context.
-            override val grpcContext: Context = Context.current(),
-            override val grpcContextDetachTo: Context?
+            override val scopeParentContext: Context?
     ): TraceSpanImpl(parentSpan) {
         override val tracer: Tracer = parentSpan.tracer
     }

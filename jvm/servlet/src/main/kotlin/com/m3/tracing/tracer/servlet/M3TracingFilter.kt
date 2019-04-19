@@ -1,5 +1,6 @@
 package com.m3.tracing.tracer.servlet
 
+import com.google.common.annotations.VisibleForTesting
 import com.m3.tracing.M3Tracer
 import com.m3.tracing.M3TracerFactory
 import org.slf4j.LoggerFactory
@@ -25,7 +26,8 @@ open class M3TracingFilter: Filter {
     }
 
     private var initCalled = false
-    private var config: Config = Config()
+    @VisibleForTesting
+    internal var config: Config = Config()
 
     @ThreadSafe
     data class Config(
@@ -49,7 +51,7 @@ open class M3TracingFilter: Filter {
         }
 
         this.initCalled = true
-        this.init(Config.fromFilterConfig(filterConfig))
+        this.config = Config.fromFilterConfig(filterConfig)
     }
     fun init(config: Config) {
         if (this.initCalled) {
