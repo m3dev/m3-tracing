@@ -35,7 +35,7 @@ class TraceSpanTest {
         mockSpan["string_tag"] = "string value" as Any?
         mockSpan["boolean_tag"] = true as Any?
         mockSpan["long_tag"] = 1234L as Any?
-        mockSpan["object"] = object: object {
+        mockSpan["object"] = object: Any() {
             override fun toString(): String {
                 return "Overriden toString()"
             }
