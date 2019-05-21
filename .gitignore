@@ -2,6 +2,8 @@ target/
 .gradle/
 *.iml
 
+out/**
+
 # InteliJ
 .idea/**/workspace.xml
 .idea/**/tasks.xml

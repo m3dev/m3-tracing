@@ -15,7 +15,7 @@ open class ServletHttpRequestInfo(protected val req: HttpServletRequest): HttpRe
     override fun <T> tryGetMetadata(key: HttpRequestMetadataKey<T>): T? = when(key) {
         HttpRequestMetadataKey.Method -> req.method as T?
         HttpRequestMetadataKey.Host -> req.serverName as T?
-        HttpRequestMetadataKey.ContentLength -> req.contentLength.let { if (it <= 0) null else it } as T?
+        HttpRequestMetadataKey.ContentLength -> req.contentLength.let { if (it <= 0) null else it.toLong() } as T?
         HttpRequestMetadataKey.Path -> req.requestURI as T?
         HttpRequestMetadataKey.RemoteAddr -> req.remoteAddr as T?
 

@@ -28,23 +28,23 @@ interface HttpRequestInfo {
  * Represents type (key) of metadata.
  * Any subclass must be singleton so that implementation can rely on instance reference equality.
  */
-abstract class HttpRequestMetadataKey<T> {
+abstract class HttpRequestMetadataKey<T>(val type: Class<T>) {
 
     /** URL of the request WITHOUT query parameters and credentials. */
-    object Url: HttpRequestMetadataKey<String>()
+    object Url: HttpRequestMetadataKey<String>(String::class.java)
 
     /** Hostname of the request destination */
-    object Host: HttpRequestMetadataKey<String>()
+    object Host: HttpRequestMetadataKey<String>(String::class.java)
 
     /** HTTP method name */
-    object Method: HttpRequestMetadataKey<String>()
+    object Method: HttpRequestMetadataKey<String>(String::class.java)
 
     /** Path of the request */
-    object Path: HttpRequestMetadataKey<String>()
+    object Path: HttpRequestMetadataKey<String>(String::class.java)
 
     /** Length of the body */
-    object ContentLength: HttpRequestMetadataKey<Long>()
+    object ContentLength: HttpRequestMetadataKey<Long>(Long::class.javaObjectType)
 
     /** Remote IP address of the request. Should consider X-Forwarded-For also. */
-    object RemoteAddr: HttpRequestMetadataKey<String>()
+    object RemoteAddr: HttpRequestMetadataKey<String>(String::class.java)
 }
