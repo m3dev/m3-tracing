@@ -99,8 +99,8 @@ void yourMethod() {
   // Parent thread should call getCurrentContext() before child thread's task.
   final TraceContext traceContext = tracer.getCurrentContext();
   executor.execute(() -> {
-    // In child thread, use traceContext.startChildSpan() to start span in the same context with parent
-    try(TraceSpan span = traceContext.startChildSpan("do_something")){
+    // In child thread, use traceContext.startSpan() to start span in the same context with parent
+    try(TraceSpan span = traceContext.startSpan("do_something")){
       // ... do anything you want ...
     }
   });
