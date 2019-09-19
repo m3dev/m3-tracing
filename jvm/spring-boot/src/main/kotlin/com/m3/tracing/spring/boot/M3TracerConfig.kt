@@ -8,6 +8,7 @@ import com.m3.tracing.tracer.servlet.M3TracingFilter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -61,7 +62,7 @@ class M3TracerConfig {
      * User can override setting with spring boot properties (as defined in `@Value`).
      */
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingFilterBean(M3TracingFilter::class)
     @ConditionalOnProperty("m3.tracing.filter.enable", matchIfMissing = true)
     fun m3TracingFilterRegistration(
             filter: M3TracingFilter,
