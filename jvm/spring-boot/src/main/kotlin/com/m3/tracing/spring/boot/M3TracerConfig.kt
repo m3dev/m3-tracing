@@ -43,12 +43,8 @@ class M3TracerConfig {
     @Bean
     fun m3TracedAspect(tracer: M3Tracer) = M3TracedAspect(tracer)
 
-    /**
-     * Configure [M3TracingFilter] with DI / spring way, rather than Servlet way.
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    fun m3TracingFilter(tracer: M3Tracer) = M3TracingFilter().also {
+    // Do not register Filter itself as Bean. Instead register FilterRegistrationBean
+    private fun m3TracingFilter(tracer: M3Tracer) = M3TracingFilter().also {
         // init(Config) method should be called BEFORE init(FilterConfig) to set configuration by instance.
         // We do not rely on FilterRegistrationBean#initParameters
         it.init(M3TracingFilter.Config(
@@ -65,12 +61,12 @@ class M3TracerConfig {
     @ConditionalOnMissingFilterBean(M3TracingFilter::class)
     @ConditionalOnProperty("m3.tracing.filter.enable", matchIfMissing = true)
     fun m3TracingFilterRegistration(
-            filter: M3TracingFilter,
+            tracer: M3Tracer,
             @Value("\${m3.tracing.filter.order:${Ordered.HIGHEST_PRECEDENCE}}")
             order: Int,
             @Value("\${m3.tracing.filter.urlPatterns:/*}")
             urlPatterns: List<String>
-    ) = FilterRegistrationBean<M3TracingFilter>(filter).also {
+    ) = FilterRegistrationBean<M3TracingFilter>(m3TracingFilter(tracer)).also {
         it.order = order
         it.urlPatterns = urlPatterns
     }
