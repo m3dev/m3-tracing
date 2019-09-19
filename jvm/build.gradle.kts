@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "com.m3.tracing"
-    version = "1.0.1"
+    version = "1.0.2-SNAPSHOT"
 
     repositories {
         jcenter()
