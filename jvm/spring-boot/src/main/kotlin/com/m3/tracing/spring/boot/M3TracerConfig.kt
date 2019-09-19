@@ -8,6 +8,7 @@ import com.m3.tracing.tracer.servlet.M3TracingFilter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -42,12 +43,8 @@ class M3TracerConfig {
     @Bean
     fun m3TracedAspect(tracer: M3Tracer) = M3TracedAspect(tracer)
 
-    /**
-     * Configure [M3TracingFilter] with DI / spring way, rather than Servlet way.
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    fun m3TracingFilter(tracer: M3Tracer) = M3TracingFilter().also {
+    // Do not register Filter itself as Bean. Instead register FilterRegistrationBean
+    private fun m3TracingFilter(tracer: M3Tracer) = M3TracingFilter().also {
         // init(Config) method should be called BEFORE init(FilterConfig) to set configuration by instance.
         // We do not rely on FilterRegistrationBean#initParameters
         it.init(M3TracingFilter.Config(
@@ -61,15 +58,15 @@ class M3TracerConfig {
      * User can override setting with spring boot properties (as defined in `@Value`).
      */
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingFilterBean(M3TracingFilter::class)
     @ConditionalOnProperty("m3.tracing.filter.enable", matchIfMissing = true)
     fun m3TracingFilterRegistration(
-            filter: M3TracingFilter,
+            tracer: M3Tracer,
             @Value("\${m3.tracing.filter.order:${Ordered.HIGHEST_PRECEDENCE}}")
             order: Int,
             @Value("\${m3.tracing.filter.urlPatterns:/*}")
             urlPatterns: List<String>
-    ) = FilterRegistrationBean<M3TracingFilter>(filter).also {
+    ) = FilterRegistrationBean<M3TracingFilter>(m3TracingFilter(tracer)).also {
         it.order = order
         it.urlPatterns = urlPatterns
     }
