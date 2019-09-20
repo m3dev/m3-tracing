@@ -34,6 +34,11 @@ subprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
 
+    val sourcesJar by tasks.creating(Jar::class) {
+      classifier = "sources"
+      from(sourceSets["main"].allSource)
+    }
+
     val opencensusVersion by extra { "0.20.0" }
 
     //Intentionally support Servlet API 3.0
@@ -78,6 +83,7 @@ subprojects {
         publications {
             create<MavenPublication>("mavenJava") {
                 from(components["java"])
+                artifact(sourcesJar)
 
                 pom {
                     url.set("https://github.com/m3dev/m3-tracing")
