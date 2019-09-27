@@ -11,7 +11,8 @@ import org.slf4j.LoggerFactory
 
 internal class HttpRequestTracer(
         private val tracer: Tracer,
-        private val textFormat: TextFormat
+        private val textFormat: TextFormat,
+        private val publicEndpoint: Boolean
 ) {
     @VisibleForTesting
     internal val getter = object: TextFormat.Getter<HttpRequestInfo>() {
@@ -22,7 +23,7 @@ internal class HttpRequestTracer(
     @VisibleForTesting
     internal val extractor = ExtractorImpl()
     @VisibleForTesting
-    internal val handler = HttpServerHandler(tracer, extractor, textFormat, getter, true)
+    internal val handler = HttpServerHandler(tracer, extractor, textFormat, getter, publicEndpoint)
 
     fun processRequest(request: HttpRequestInfo) = HttpRequestSpanImpl(handler, tracer, request).also {
         it.init()

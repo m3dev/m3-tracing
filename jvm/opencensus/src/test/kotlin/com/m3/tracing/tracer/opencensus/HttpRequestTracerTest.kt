@@ -26,7 +26,7 @@ class HttpRequestTracerTest {
         @Mock
         lateinit var httpRequest: HttpRequestInfo
 
-        private val httpRequestTracer by lazy { HttpRequestTracer(tracer, textFormat) }
+        private val httpRequestTracer by lazy { HttpRequestTracer(tracer, textFormat, true) }
 
         @Test
         fun `Should pass-through header`() {

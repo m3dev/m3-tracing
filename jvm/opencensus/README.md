@@ -2,7 +2,7 @@
 
 ## Sampling ratio setting (explicit setting required)
 
-You can controll sampling ratio of tracing. Higher sampling ratio covers most of incoming requests.
+You can control sampling ratio of tracing. Higher sampling ratio covers most of incoming requests.
 
 If your application is an non-root of a trace (get API/RPC request from traced system), no need to set sampling ratio. Because sampling ratio is controlled by root of trace. In other word, if your application may receive request from external (non-traced) application, you have to set sampling ratio.
 
@@ -17,6 +17,20 @@ Possible values are:
 - `never`
 
 Default value is `never` to prevent unexpected traces, so that you need to specify value explicitly to enable tracing.
+
+## Tracing context propagation setting
+
+You can control tracing context propagation between services.
+
+If your application is an non-root of a trace, you have to set endpoint public setting as false for viewing entire trace forest.
+
+To set tracing context propagation, set setting value into `M3_TRACER_OPENCENSUS_ENDPOINT_PUBLIC` environment variable or `m3.tracer.opencensus.endpoint.public` JVM system property.
+
+Possible values are:
+
+- `true` or `false`
+
+Default value is `true` to prevent unexpected tracing context propagation. You need to specify value to `false` if you enable to trace your backend service as part of entire trace forest.
 
 ## Side effect of `io.grpc.Context`
 
