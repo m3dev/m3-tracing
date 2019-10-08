@@ -15,18 +15,14 @@ class M3TracingHttpRequestInterceptor(
         private val tracer: M3Tracer
 ): ClientHttpRequestInterceptor {
     override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
-        return tracer.startSpan(
-                // Excluded path & query because it might contain dynamic string
-                // Variable string makes huge span summary table and impact to system performance
-                "HTTP ${request.methodValue} ${request.uri.host}"
-        ).use { span ->
+        return tracer.processOutgoingHttpRequest(wrapRequest(request)).use { span ->
             span["client"] = "RestTemplate"
             span["method"] = request.methodValue
             span["uri"] = request.uri.toString()
-
             execution.execute(request, body).also { response ->
                 span["status"] = response.rawStatusCode
             }
         }
     }
+    fun wrapRequest(request: HttpRequest) = SpringHttpRequestInfo(request)
 }

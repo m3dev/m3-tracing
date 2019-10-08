@@ -30,6 +30,13 @@ interface M3Tracer: AutoCloseable, TraceContext {
     fun processIncomingHttpRequest(request: HttpRequestInfo): HttpRequestSpan
 
     /**
+     * Start trace for outgoing HTTP request.
+     * Caller MUST close the [HttpRequestSpan] to prevent leak.
+     */
+    @CheckReturnValue
+    fun processOutgoingHttpRequest(request: HttpRequestInfo): HttpRequestSpan
+
+    /**
      * Returns context bound to current thread / call stack.
      *
      * When you get this object, it saves [TraceSpan] state of current thread / call stack.

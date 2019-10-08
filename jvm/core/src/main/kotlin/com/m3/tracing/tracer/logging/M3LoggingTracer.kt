@@ -38,6 +38,23 @@ class M3LoggingTracer: M3Tracer {
         override fun startChildSpan(name: String): TraceSpan = TraceSpanImpl(name)
     }
 
+    override fun processOutgoingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = object: TraceSpanImpl("HTTP ${request.url}"), HttpRequestSpan {
+        private var e: Throwable? = null
+        override fun setError(e: Throwable?) {
+            this.e = e
+        }
+
+        override fun setResponse(response: HttpResponseInfo) {}
+        override fun close() {
+            if (this.e != null) {
+                output.info("Error captured in client request ${request.url}: $e")
+            }
+            super.close()
+        }
+
+        override fun startChildSpan(name: String): TraceSpan = TraceSpanImpl(name)
+    }
+
     // This implementation holds nothing in thread local.
     override val currentContext = object: TraceContext {
         override fun startSpan(name: String): TraceSpan = TraceSpanImpl(name)
