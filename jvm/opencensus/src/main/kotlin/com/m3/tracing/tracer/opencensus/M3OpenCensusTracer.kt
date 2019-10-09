@@ -27,6 +27,7 @@ class M3OpenCensusTracer internal constructor(
 ) : M3Tracer {
     companion object {
         const val samplingConfigName = "m3.tracer.opencensus.sampling"
+        const val publicEndpointConfigName = "m3.tracer.opencensus.endpoint.public"
 
         private val logger = LoggerFactory.getLogger(M3OpenCensusTracer::class.java)
     }
@@ -39,7 +40,7 @@ class M3OpenCensusTracer internal constructor(
 
     private val sampler = createSampler()
     private val propagator = Tracing.getPropagationComponent()
-    private val httpRequestTracer = HttpRequestTracer(tracer, propagator.traceContextFormat)
+    private val httpRequestTracer = HttpRequestTracer(tracer, propagator.traceContextFormat, publicEndpoint())
 
     init {
         setupOpenCensus()
@@ -67,6 +68,8 @@ class M3OpenCensusTracer internal constructor(
     private fun createSampler() = SamplerFactory.createSampler(
             Config[samplingConfigName] ?: "never"
     )
+
+    private fun publicEndpoint() = (Config[publicEndpointConfigName] ?: "true").toBoolean()
 }
 
 internal class TraceContextImpl(
