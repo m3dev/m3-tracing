@@ -65,6 +65,8 @@ class M3OpenCensusTracer internal constructor(
 
     override fun processIncomingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = httpRequestTracer.processRequest(request)
 
+    override fun processOutgoingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = httpRequestTracer.processClientRequest(request)
+
     private fun createSampler() = SamplerFactory.createSampler(
             Config[samplingConfigName] ?: "never"
     )
