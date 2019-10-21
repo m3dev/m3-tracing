@@ -22,11 +22,6 @@ interface HttpRequestInfo {
      * @return If given header is not available, return null.
      */
     fun tryGetHeader(name: String): String?
-
-    /**
-     * Set value into header.
-     */
-    fun trySetHeader(name: String, value: String)
 }
 
 /**

@@ -10,7 +10,6 @@ open class ServletHttpRequestInfo(protected val req: HttpServletRequest): HttpRe
     // Thus this filter should not do anything breaks setCharacterEncoding() even after FilterCain.
 
     override fun tryGetHeader(name: String): String? = req.getHeader(name)
-    override fun trySetHeader(name: String, value: String) = Unit // Do nothing
 
     @Suppress("UNCHECKED_CAST", "IMPLICIT_ANY")
     override fun <T> tryGetMetadata(key: HttpRequestMetadataKey<T>): T? = when(key) {

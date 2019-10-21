@@ -6,6 +6,7 @@ import com.m3.tracing.TraceContext
 import com.m3.tracing.TraceSpan
 import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestSpan
+import com.m3.tracing.http.MutableHttpRequestInfo
 import com.m3.tracing.internal.Config
 import io.grpc.Context
 import io.opencensus.common.Scope
@@ -65,7 +66,7 @@ class M3OpenCensusTracer internal constructor(
 
     override fun processIncomingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = httpRequestTracer.processRequest(request)
 
-    override fun processOutgoingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = httpRequestTracer.processClientRequest(request)
+    override fun processOutgoingHttpRequest(request: MutableHttpRequestInfo): HttpRequestSpan = httpRequestTracer.processClientRequest(request)
 
     private fun createSampler() = SamplerFactory.createSampler(
             Config[samplingConfigName] ?: "never"
