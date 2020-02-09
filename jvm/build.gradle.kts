@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "com.m3.tracing"
-    version = "1.0.2-SNAPSHOT"
+    version = "1.0.2"
 
     repositories {
         jcenter()
@@ -80,6 +80,20 @@ subprojects {
             }
         }
 
+        // Legacy billing plans can't use GitHub Package Registry
+        /*
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/m3dev/m3-tracing")
+                credentials {
+                    username = System.getenv("GITHUB_USERNAME")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+        */
+
         publications {
             create<MavenPublication>("mavenJava") {
                 from(components["java"])
@@ -98,4 +112,5 @@ subprojects {
             }
         }
     }
+
 }
