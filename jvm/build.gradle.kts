@@ -1,3 +1,6 @@
+
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -9,7 +12,7 @@ plugins {
 
 allprojects {
     group = "com.m3.tracing"
-    version = "1.0.2"
+    version = "1.0.3-SNAPSHOT"
 
     repositories {
         jcenter()
@@ -30,7 +33,7 @@ subprojects {
 
     tasks.withType<KotlinCompile> {
         kotlinOptions.javaParameters = true
-        kotlinOptions.freeCompilerArgs = listOf("-Xprogressive", "-Xjvm-default=enable")
+        kotlinOptions.freeCompilerArgs = listOf("-progressive", "-Xjvm-default=enable")
         kotlinOptions.jvmTarget = "1.8"
     }
 
@@ -39,7 +42,7 @@ subprojects {
       from(sourceSets["main"].allSource)
     }
 
-    val opencensusVersion by extra { "0.20.0" }
+    val opencensusVersion by extra { "0.25.0" }
 
     //Intentionally support Servlet API 3.0
     //Intentionally support Servlet API 3.0
@@ -49,6 +52,14 @@ subprojects {
     val springBootVersion by extra { "2.1.4.RELEASE" }
     val springVersion by extra { "5.1.6.RELEASE" }
     val apacheHttpClientVersion by extra { "4.5.8" }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            exceptionFormat = TestExceptionFormat.FULL
+            events = setOf(TestLogEvent.STARTED, TestLogEvent.SKIPPED, TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.STANDARD_OUT, TestLogEvent.STANDARD_ERROR)
+        }
+    }
 
     dependencies {
         compile(kotlin("stdlib-jdk8"))
