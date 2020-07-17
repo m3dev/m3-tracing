@@ -33,7 +33,7 @@ class M3OpenCensusTracer internal constructor(
     }
 
     constructor(): this(
-            tracer = Tracing.getTracer(),
+            tracer = CustomNameTracer(),
             traceConfig = Tracing.getTraceConfig(),
             exportComponent = Tracing.getExportComponent()
     )

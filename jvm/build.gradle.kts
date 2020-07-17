@@ -42,7 +42,7 @@ subprojects {
       from(sourceSets["main"].allSource)
     }
 
-    val opencensusVersion by extra { "0.25.0" }
+    val opencensusVersion by extra { "0.26.0" }
 
     //Intentionally support Servlet API 3.0
     //Intentionally support Servlet API 3.0
