@@ -3,6 +3,7 @@ package com.m3.tracing.apache.httpclient
 import com.m3.tracing.M3Tracer
 import com.m3.tracing.M3TracerFactory
 import com.m3.tracing.TraceSpan
+import com.m3.tracing.http.HttpRequestMetadataKey
 import org.apache.http.HttpRequest
 import org.apache.http.HttpRequestInterceptor
 import org.apache.http.HttpResponse
@@ -29,12 +30,14 @@ open class M3TracingHttpInterceptor(
     constructor(): this(M3TracerFactory.get())
 
     override fun process(request: HttpRequest, context: HttpContext) {
-        val span = tracer.startSpan(createSpanName(request))
+        val requestInfo = ApacheHttpRequestInfo(request, context)
+        val span = tracer.processOutgoingHttpRequest(requestInfo)
         currentSpan.set(span) // Set to ThreadLocal ASAP to prevent leak
 
         doQuietly {
-            span["method"] = request.requestLine.method
-            span["uri"] = request.requestLine.uri
+            span["client"] = "m3-tracing:apache-httpclient"
+            span["method"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Method)
+            span["path"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Path)
         }
     }
 
