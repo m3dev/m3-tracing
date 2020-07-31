@@ -52,17 +52,6 @@ open class M3TracingHttpInterceptor(
         span.close()
     }
 
-
-    private fun createSpanName(request: HttpRequest): String {
-        // Intentionally excluded queryString because it might contain dynamic string
-        // Dynamic span name makes runningSpan table so huge
-        return if (request is HttpUriRequest) {
-            "HTTP ${request.method} ${request.uri.host}"
-        } else {
-            "HTTP ${request.requestLine.method}"
-        }
-    }
-
     /**
      * `On Error Resume Next` in 21st century.
      */
