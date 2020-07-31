@@ -63,11 +63,78 @@ class ApacheHttpRequestInfoTest {
         Mockito.`when`(requestLine.method).thenReturn("GET")
         Mockito.`when`(requestLine.uri).thenReturn("/foo/bar.html?param=value")
 
-        val req = ApacheHttpRequestInfo(nonUriRequest, nonClientContext)
+        var req = ApacheHttpRequestInfo(nonUriRequest, nonClientContext)
 
         Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Host)).isNull()
         Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Method)).isEqualTo("GET")
         Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Path)).isEqualTo("/foo/bar.html")
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Url)).isNull()
+
+        Mockito.`when`(requestLine.uri).thenReturn("/")
+
+        req = ApacheHttpRequestInfo(nonUriRequest, nonClientContext)
+
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Host)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Method)).isEqualTo("GET")
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Path)).isEqualTo("/")
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Url)).isNull()
+    }
+
+    @Test
+    fun `no exception when attributes in HttpUriRequest are null`() {
+
+        val requestLine = mock(RequestLine::class.java)
+        val uri = mock(URI::class.java)
+        val host = mock(HttpHost::class.java)
+
+        Mockito.`when`(uriRequest.requestLine).thenReturn(requestLine)
+        Mockito.`when`(uriRequest.uri).thenReturn(uri)
+        Mockito.`when`(clientContext.targetHost).thenReturn(host)
+        Mockito.`when`(uri.path).thenReturn(null)
+        Mockito.`when`(requestLine.method).thenReturn(null)
+        Mockito.`when`(host.hostName).thenReturn(null)
+        Mockito.`when`(host.toURI()).thenReturn(null)
+
+        var req = ApacheHttpRequestInfo(uriRequest, clientContext)
+
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Host)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Method)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Path)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Url)).isEqualTo("null")
+
+        Mockito.`when`(uriRequest.requestLine).thenReturn(null)
+        Mockito.`when`(uriRequest.uri).thenReturn(null)
+        Mockito.`when`(clientContext.targetHost).thenReturn(null)
+
+        req = ApacheHttpRequestInfo(uriRequest, clientContext)
+
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Host)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Method)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Path)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Url)).isEqualTo("null")
+    }
+
+    @Test
+    fun `no exception when attributes in non-HttpUriRequest are null`() {
+
+        val requestLine = mock(RequestLine::class.java)
+
+        Mockito.`when`(nonUriRequest.requestLine).thenReturn(requestLine)
+        Mockito.`when`(requestLine.method).thenReturn(null)
+        Mockito.`when`(requestLine.uri).thenReturn(null)
+
+        val req = ApacheHttpRequestInfo(nonUriRequest, nonClientContext)
+
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Host)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Method)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Path)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Url)).isNull()
+
+        Mockito.`when`(nonUriRequest.requestLine).thenReturn(null)
+
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Host)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Method)).isNull()
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Path)).isNull()
         Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Url)).isNull()
     }
 }
