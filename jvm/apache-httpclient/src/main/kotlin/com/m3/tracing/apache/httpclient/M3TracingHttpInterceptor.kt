@@ -8,7 +8,6 @@ import org.apache.http.HttpRequest
 import org.apache.http.HttpRequestInterceptor
 import org.apache.http.HttpResponse
 import org.apache.http.HttpResponseInterceptor
-import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.protocol.HttpContext
 import org.slf4j.LoggerFactory
 
@@ -27,7 +26,7 @@ open class M3TracingHttpInterceptor(
         private val logger = LoggerFactory.getLogger(M3TracingHttpInterceptor::class.java)
     }
 
-    constructor(): this(M3TracerFactory.get())
+    constructor() : this(M3TracerFactory.get())
 
     override fun process(request: HttpRequest, context: HttpContext) {
         val requestInfo = ApacheHttpRequestInfo(request, context)
