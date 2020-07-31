@@ -43,15 +43,15 @@ class ApacheHttpRequestInfoTest {
         Mockito.`when`(clientContext.targetHost).thenReturn(host)
         Mockito.`when`(uri.path).thenReturn("/foo/bar.html")
         Mockito.`when`(requestLine.method).thenReturn("GET")
-        Mockito.`when`(host.hostName).thenReturn("test.m3.com")
-        Mockito.`when`(host.toURI()).thenReturn("http://test.m3.com")
+        Mockito.`when`(host.hostName).thenReturn("example.com")
+        Mockito.`when`(host.toString()).thenReturn("http://example.com")
 
         val req = ApacheHttpRequestInfo(uriRequest, clientContext)
 
-        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Host)).isEqualTo("test.m3.com")
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Host)).isEqualTo("example.com")
         Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Method)).isEqualTo("GET")
         Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Path)).isEqualTo("/foo/bar.html")
-        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Url)).isEqualTo("http://test.m3.com/foo/bar.html")
+        Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Url)).isEqualTo("http://example.com/foo/bar.html")
     }
 
     @Test
@@ -93,7 +93,7 @@ class ApacheHttpRequestInfoTest {
         Mockito.`when`(uri.path).thenReturn(null)
         Mockito.`when`(requestLine.method).thenReturn(null)
         Mockito.`when`(host.hostName).thenReturn(null)
-        Mockito.`when`(host.toURI()).thenReturn(null)
+        Mockito.`when`(host.toString()).thenReturn(null)
 
         var req = ApacheHttpRequestInfo(uriRequest, clientContext)
 
