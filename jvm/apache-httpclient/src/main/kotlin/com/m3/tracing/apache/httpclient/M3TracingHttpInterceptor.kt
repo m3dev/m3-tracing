@@ -3,11 +3,11 @@ package com.m3.tracing.apache.httpclient
 import com.m3.tracing.M3Tracer
 import com.m3.tracing.M3TracerFactory
 import com.m3.tracing.TraceSpan
+import com.m3.tracing.http.HttpRequestMetadataKey
 import org.apache.http.HttpRequest
 import org.apache.http.HttpRequestInterceptor
 import org.apache.http.HttpResponse
 import org.apache.http.HttpResponseInterceptor
-import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.protocol.HttpContext
 import org.slf4j.LoggerFactory
 
@@ -19,22 +19,24 @@ open class M3TracingHttpInterceptor(
         protected val tracer: M3Tracer
 ) : HttpRequestInterceptor, HttpResponseInterceptor {
     companion object {
-        @JvmStatic
+        @JvmField
         public val INSTANCE = M3TracingHttpInterceptor()
 
         private val currentSpan = ThreadLocal<TraceSpan>()
         private val logger = LoggerFactory.getLogger(M3TracingHttpInterceptor::class.java)
     }
 
-    constructor(): this(M3TracerFactory.get())
+    constructor() : this(M3TracerFactory.get())
 
     override fun process(request: HttpRequest, context: HttpContext) {
-        val span = tracer.startSpan(createSpanName(request))
+        val requestInfo = ApacheHttpRequestInfo(request, context)
+        val span = tracer.processOutgoingHttpRequest(requestInfo)
         currentSpan.set(span) // Set to ThreadLocal ASAP to prevent leak
 
         doQuietly {
-            span["method"] = request.requestLine.method
-            span["uri"] = request.requestLine.uri
+            span["client"] = "m3-tracing:apache-httpclient"
+            span["method"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Method)
+            span["path"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Path)
         }
     }
 
@@ -47,17 +49,6 @@ open class M3TracingHttpInterceptor(
             span["status"] = response.statusLine.statusCode
         }
         span.close()
-    }
-
-
-    private fun createSpanName(request: HttpRequest): String {
-        // Intentionally excluded queryString because it might contain dynamic string
-        // Dynamic span name makes runningSpan table so huge
-        return if (request is HttpUriRequest) {
-            "HTTP ${request.method} ${request.uri.host}"
-        } else {
-            "HTTP ${request.requestLine.method}"
-        }
     }
 
     /**
