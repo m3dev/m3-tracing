@@ -19,7 +19,7 @@ open class M3TracingHttpInterceptor(
         protected val tracer: M3Tracer
 ) : HttpRequestInterceptor, HttpResponseInterceptor {
     companion object {
-        @JvmStatic
+        @JvmField
         public val INSTANCE = M3TracingHttpInterceptor()
 
         private val currentSpan = ThreadLocal<TraceSpan>()
