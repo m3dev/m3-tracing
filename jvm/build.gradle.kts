@@ -12,7 +12,7 @@ plugins {
 
 allprojects {
     group = "com.m3.tracing"
-    version = "1.0.3-SNAPSHOT"
+    version = "1.0.3"
 
     repositories {
         jcenter()
@@ -84,9 +84,9 @@ subprojects {
             maven {
                 // change to point to your repo, e.g. http://my.org/repo
                 if (version.toString().endsWith("SNAPSHOT")) {
-                    url = uri("http://maven:8081/artifactory/libs-snapshots")
+                    url = uri("https://packages.m3internal.com/repository/maven-snapshots/")
                 } else {
-                    url = uri("http://maven:8081/artifactory/libs-releases")
+                    url = uri("https://packages.m3internal.com/repository/maven-releases/")
                 }
             }
         }
