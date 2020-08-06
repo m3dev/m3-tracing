@@ -8,8 +8,7 @@ import okhttp3.Response
 import org.slf4j.LoggerFactory
 
 /**
- * Interceptor for Apache HTTP Client.
- *
+ * Interceptor for OkHttp.
  */
 open class M3TracingInterceptor(
         private val tracer: M3Tracer
@@ -25,7 +24,7 @@ open class M3TracingInterceptor(
         val span = tracer.processOutgoingHttpRequest(requestInfo)
 
         doQuietly {
-            span["client"] = "m3-tracing:okhtp"
+            span["client"] = "m3-tracing:okhttp"
             span["method"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Method)
             span["path"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Path)
         }
