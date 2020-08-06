@@ -4,11 +4,18 @@
 ## Unreleased
 -->
 
+## Release notes - 1.0.4 (2020-08-07)
+
+## Added
+
+- OkHttp integration
+
+
 ## Release notes - 1.0.3 (2020-08-04)
 
 ### Breaking Change
 
-- apache-httpclient: to refer an instance of `M3TracingHttpInterceptor`, use the `INSTANCE` static field instaed of `getInstance` static method  
+- apache-httpclient: to refer an instance of `M3TracingHttpInterceptor`, use the `INSTANCE` static field instaed of `getInstance` static method
 
 ### Added
 
