@@ -4,7 +4,7 @@ import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestMetadataKey
 import okhttp3.Request
 
-open class MutableHttpRequestInfo(
+open class OkHttpMutableHttpRequestInfo(
         private var baseReq: Request
 ) : HttpRequestInfo {
     private var builder: Request.Builder = baseReq.newBuilder()

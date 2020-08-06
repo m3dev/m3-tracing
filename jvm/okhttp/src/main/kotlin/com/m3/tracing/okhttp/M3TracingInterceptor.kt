@@ -20,24 +20,23 @@ open class M3TracingInterceptor(
     constructor() : this(M3TracerFactory.get())
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val requestInfo = MutableHttpRequestInfo(chain.request())
-        val span = tracer.processOutgoingHttpRequest(requestInfo)
+        val requestInfo = OkHttpMutableHttpRequestInfo(chain.request())
 
-        doQuietly {
-            span["client"] = "m3-tracing:okhttp"
-            span["method"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Method)
-            span["path"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Path)
+        return tracer.processOutgoingHttpRequest(requestInfo).use { span ->
+            doQuietly {
+                span["client"] = "m3-tracing:okhttp"
+                span["method"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Method)
+                span["path"] = requestInfo.tryGetMetadata(HttpRequestMetadataKey.Path)
+            }
+
+            val response = chain.proceed(requestInfo.build())
+
+            doQuietly {
+                span["status"] = response.code
+            }
+
+            response
         }
-
-        val response = chain.proceed(requestInfo.build())
-
-        doQuietly {
-            span["status"] = response.code
-        }
-
-        span.close()
-
-        return response
     }
 
     private fun doQuietly(action: () -> Unit) {

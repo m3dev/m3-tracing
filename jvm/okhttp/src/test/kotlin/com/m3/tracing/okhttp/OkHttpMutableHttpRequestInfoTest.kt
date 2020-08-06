@@ -5,7 +5,7 @@ import com.m3.tracing.http.HttpRequestMetadataKey
 import okhttp3.Request
 import org.junit.jupiter.api.Test
 
-class MutableHttpRequestInfoTest {
+class OkHttpMutableHttpRequestInfoTest {
     @Test
     fun `each attribute is set properly for Request`() {
         val request = Request.Builder()
@@ -13,7 +13,7 @@ class MutableHttpRequestInfoTest {
                 .url("http://example.com/foo/bar.html")
                 .build()
 
-        val req = MutableHttpRequestInfo(request)
+        val req = OkHttpMutableHttpRequestInfo(request)
 
         Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Host)).isEqualTo("example.com")
         Truth.assertThat(req.tryGetMetadata(HttpRequestMetadataKey.Method)).isEqualTo("GET")
@@ -28,7 +28,7 @@ class MutableHttpRequestInfoTest {
                 .url("http://example.com/foo/bar.html")
                 .build()
 
-        val req = MutableHttpRequestInfo(request)
+        val req = OkHttpMutableHttpRequestInfo(request)
 
         req.trySetHeader("hoge", "fuga")
 
