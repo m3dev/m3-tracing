@@ -52,6 +52,7 @@ subprojects {
     val springBootVersion by extra { "2.1.4.RELEASE" }
     val springVersion by extra { "5.1.6.RELEASE" }
     val apacheHttpClientVersion by extra { "4.5.8" }
+    val okHttpClientVersion by extra { "4.8.0" }
 
     tasks.withType<Test> {
         useJUnitPlatform()

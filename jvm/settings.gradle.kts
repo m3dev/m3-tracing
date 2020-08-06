@@ -1,5 +1,6 @@
 include(
         "apache-httpclient",
+        "okhttp",
         "core",
         "jdbc-p6spy",
         "opencensus",
