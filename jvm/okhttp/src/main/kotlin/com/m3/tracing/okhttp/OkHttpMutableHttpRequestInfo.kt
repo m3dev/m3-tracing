@@ -5,9 +5,9 @@ import com.m3.tracing.http.HttpRequestMetadataKey
 import okhttp3.Request
 
 open class OkHttpMutableHttpRequestInfo(
-        private var baseReq: Request
+        private val baseReq: Request
 ) : HttpRequestInfo {
-    private var builder: Request.Builder = baseReq.newBuilder()
+    private val builder: Request.Builder = baseReq.newBuilder()
 
     override fun tryGetHeader(name: String): String? = baseReq.header(name)
     override fun trySetHeader(name: String, value: String) {
