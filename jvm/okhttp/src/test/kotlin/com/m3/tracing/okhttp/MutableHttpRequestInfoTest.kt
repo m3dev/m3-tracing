@@ -5,7 +5,7 @@ import com.m3.tracing.http.HttpRequestMetadataKey
 import okhttp3.Request
 import org.junit.jupiter.api.Test
 
-class HttpRequestInfoTest {
+class MutableHttpRequestInfoTest {
     @Test
     fun `each attribute is set properly for Request`() {
         val request = Request.Builder()
