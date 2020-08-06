@@ -1,4 +1,4 @@
-# OkHTTP integration
+# OkHttp integration
 
 ## How to setup
 
