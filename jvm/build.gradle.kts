@@ -12,7 +12,7 @@ plugins {
 
 allprojects {
     group = "com.m3.tracing"
-    version = "1.0.4"
+    version = "1.0.5-SNAPSHOT"
 
     repositories {
         jcenter()
@@ -42,7 +42,7 @@ subprojects {
       from(sourceSets["main"].allSource)
     }
 
-    val opencensusVersion by extra { "0.26.0" }
+    val opencensusVersion by extra { "0.25.0" }
 
     //Intentionally support Servlet API 3.0
     //Intentionally support Servlet API 3.0
