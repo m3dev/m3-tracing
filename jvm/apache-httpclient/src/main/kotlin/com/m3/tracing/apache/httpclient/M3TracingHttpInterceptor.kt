@@ -31,11 +31,14 @@ open class M3TracingHttpInterceptor(
     internal fun closeSpan(callback: (span: TraceSpan) -> Unit) {
         val span = currentSpan.get()
         if(span == null) {
-            logger.warn("Current span is not found. Unable to close and send span.")
-        } else {
-            callback(span)
-            span.close()
+            logger.debug("Current span is not found. Unable to close and send span.")
+            return
         }
+
+        doQuietly {
+            callback(span)
+        }
+        span.close()
         currentSpan.set(null) // Prevent ClassLoader leak
     }
 
@@ -53,17 +56,9 @@ open class M3TracingHttpInterceptor(
     }
 
     override fun process(response: HttpResponse, context: HttpContext) {
-        val span = currentSpan.get()
-        currentSpan.set(null) // Prevent ClassLoader leak
-        if(span == null) {
-            logger.warn("Current span is not found. Unable to close and send span.")
-            return
+        closeSpan {
+            it["status"] = response.statusLine.statusCode
         }
-        // Must continue to span.close() statement to prevent memory leak
-        doQuietly {
-            span["status"] = response.statusLine.statusCode
-        }
-        span.close()
     }
 
     /**
