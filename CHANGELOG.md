@@ -6,7 +6,7 @@
 
 ## Release notes - 1.0.4 (2020-08-07)
 
-## Added
+### Added
 
 - OkHttp integration
 

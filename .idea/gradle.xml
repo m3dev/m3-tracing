@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/jvm/apache-httpclient" />
             <option value="$PROJECT_DIR$/jvm/core" />
             <option value="$PROJECT_DIR$/jvm/jdbc-p6spy" />
+            <option value="$PROJECT_DIR$/jvm/okhttp" />
             <option value="$PROJECT_DIR$/jvm/opencensus" />
             <option value="$PROJECT_DIR$/jvm/servlet" />
             <option value="$PROJECT_DIR$/jvm/spring-boot" />
