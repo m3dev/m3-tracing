@@ -4,6 +4,13 @@
 ## Unreleased
 -->
 
+## Release notes - 1.0.5 (2020-09-03)
+
+### Added
+
+- apache-httpclient: update apache-httpclinet module to handle error [#8](https://github.com/m3dev/m3-tracing/pull/8)
+
+
 ## Release notes - 1.0.4 (2020-08-07)
 
 ### Added
