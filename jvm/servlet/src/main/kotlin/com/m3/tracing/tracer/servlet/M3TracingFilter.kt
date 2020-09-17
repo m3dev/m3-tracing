@@ -32,11 +32,13 @@ open class M3TracingFilter: Filter {
     @ThreadSafe
     data class Config(
             val tracer: M3Tracer = M3TracerFactory.get(),
-            val shutdownTracer: Boolean = true
+            val shutdownTracer: Boolean = true,
+            val isOldServletVersion: Boolean = false
     ) {
         companion object {
             fun fromFilterConfig(filterConfig: FilterConfig) = Config(
-                    shutdownTracer = (filterConfig.getInitParameter("shutdown_tracer") ?: "true").toBoolean()
+                    shutdownTracer = (filterConfig.getInitParameter("shutdown_tracer") ?: "true").toBoolean(),
+                    isOldServletVersion = filterConfig.servletContext.majorVersion < 3
             )
         }
     }
@@ -111,5 +113,5 @@ open class M3TracingFilter: Filter {
     }
 
     protected open fun wrapRequest(req: HttpServletRequest) = ServletHttpRequestInfo(req)
-    protected open fun wrapResponse(res: HttpServletResponse) = ServletHttpResponseInfo(res)
+    protected open fun wrapResponse(res: HttpServletResponse) = ServletHttpResponseInfo(res, this.config.isOldServletVersion)
 }
