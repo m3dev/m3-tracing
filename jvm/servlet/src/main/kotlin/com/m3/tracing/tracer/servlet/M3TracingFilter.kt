@@ -33,12 +33,12 @@ open class M3TracingFilter: Filter {
     data class Config(
             val tracer: M3Tracer = M3TracerFactory.get(),
             val shutdownTracer: Boolean = true,
-            val isOldServletVersion: Boolean = false
+            val olderThanServlet3: Boolean = false
     ) {
         companion object {
             fun fromFilterConfig(filterConfig: FilterConfig) = Config(
                     shutdownTracer = (filterConfig.getInitParameter("shutdown_tracer") ?: "true").toBoolean(),
-                    isOldServletVersion = filterConfig.servletContext.majorVersion < 3
+                    olderThanServlet3 = filterConfig.servletContext.majorVersion < 3
             )
         }
     }
@@ -113,5 +113,5 @@ open class M3TracingFilter: Filter {
     }
 
     protected open fun wrapRequest(req: HttpServletRequest) = ServletHttpRequestInfo(req)
-    protected open fun wrapResponse(res: HttpServletResponse) = ServletHttpResponseInfo(res, this.config.isOldServletVersion)
+    protected open fun wrapResponse(res: HttpServletResponse) = ServletHttpResponseInfo(res, this.config.olderThanServlet3)
 }
