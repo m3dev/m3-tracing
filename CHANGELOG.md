@@ -4,6 +4,13 @@
 ## Unreleased
 -->
 
+## Release notes - 1.0.6 (2020-09-18)
+
+### Added
+
+- servlet: update servlet for old servlet api [#9](https://github.com/m3dev/m3-tracing/pull/9)
+
+
 ## Release notes - 1.0.5 (2020-09-03)
 
 ### Added
