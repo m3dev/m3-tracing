@@ -13,6 +13,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import javax.servlet.FilterChain
 import javax.servlet.FilterConfig
+import javax.servlet.ServletContext
 import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
@@ -25,11 +26,14 @@ class M3TracingFilterTest {
     class `Test filterConfig` {
         @Mock lateinit var tracer: M3Tracer
         @Mock lateinit var filterConfig: FilterConfig
+        @Mock lateinit var servletContext: ServletContext
         private val filter by lazy { M3TracingFilter() }
 
         @Test
         fun `test shutdown_tracer is false`() {
             Mockito.`when`(filterConfig.getInitParameter("shutdown_tracer")).thenReturn("false")
+            Mockito.`when`(filterConfig.servletContext).thenReturn(servletContext)
+            Mockito.`when`(servletContext.majorVersion).thenReturn(3)
 
             filter.init(filterConfig)
             Truth.assertThat(filter.config.shutdownTracer).isFalse()
@@ -38,6 +42,8 @@ class M3TracingFilterTest {
         @Test
         fun `test shutdown_tracer is true`() {
             Mockito.`when`(filterConfig.getInitParameter("shutdown_tracer")).thenReturn("true")
+            Mockito.`when`(filterConfig.servletContext).thenReturn(servletContext)
+            Mockito.`when`(servletContext.majorVersion).thenReturn(3)
 
             filter.init(filterConfig)
             Truth.assertThat(filter.config.shutdownTracer).isTrue()
