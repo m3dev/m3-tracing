@@ -7,7 +7,7 @@ plugins {
     base
     java
     `maven-publish`
-    kotlin("jvm") version "1.3.21" apply false
+    kotlin("jvm") version "1.7.22" apply false
 }
 
 allprojects {
@@ -34,7 +34,7 @@ subprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions.javaParameters = true
         kotlinOptions.freeCompilerArgs = listOf("-progressive", "-Xjvm-default=enable")
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "17"
     }
 
     val sourcesJar by tasks.creating(Jar::class) {
@@ -44,13 +44,11 @@ subprojects {
 
     val opencensusVersion by extra { "0.25.0" }
 
-    //Intentionally support Servlet API 3.0
-    //Intentionally support Servlet API 3.0
-    val servletApiVersion by extra { "3.0.1" }
+    val servletApiVersion by extra { "6.0.0" }
 
     // Following versions are based on spring-boot
-    val springBootVersion by extra { "2.1.4.RELEASE" }
-    val springVersion by extra { "5.1.6.RELEASE" }
+    val springBootVersion by extra { "3.0.0" }
+    val springVersion by extra { "6.0.0" }
     val apacheHttpClientVersion by extra { "4.5.8" }
     val okHttpClientVersion by extra { "4.8.0" }
 
@@ -63,8 +61,6 @@ subprojects {
     }
 
     dependencies {
-        compile(kotlin("stdlib-jdk8"))
-
         implementation("com.google.code.findbugs:jsr305:3.0.2")
         implementation("com.google.guava:guava:27.1-jre")
 
@@ -73,9 +69,9 @@ subprojects {
         testImplementation("ch.qos.logback:logback-classic:1.2.3")
 
         testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
-        testImplementation("org.mockito:mockito-junit-jupiter:2.26.0")
-        testImplementation("org.mockito:mockito-core:2.27.0")
-        testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
+        testImplementation("org.mockito:mockito-junit-jupiter:4.8.1")
+        testImplementation("org.mockito:mockito-core:4.8.1")
+        testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
         testImplementation("com.google.truth:truth:0.44")
         testImplementation("com.google.truth.extensions:truth-java8-extension:0.44")
     }

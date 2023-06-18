@@ -4,20 +4,20 @@ import com.google.common.truth.Truth
 import com.m3.tracing.M3Tracer
 import com.m3.tracing.http.HttpRequestSpan
 import com.m3.tracing.tracer.opencensus.M3OpenCensusTracer
-import com.nhaarman.mockitokotlin2.any
+import org.mockito.kotlin.any
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import javax.servlet.FilterChain
-import javax.servlet.FilterConfig
-import javax.servlet.ServletContext
-import javax.servlet.ServletRequest
-import javax.servlet.ServletResponse
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.FilterChain
+import jakarta.servlet.FilterConfig
+import jakarta.servlet.ServletContext
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 
 
 class M3TracingFilterTest {

@@ -2,7 +2,7 @@ package com.m3.tracing.tracer.servlet
 
 import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestMetadataKey
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 open class ServletHttpRequestInfo(protected val req: HttpServletRequest): HttpRequestInfo {
     // note: (Java Servlet API problem) Do not call req.getParameter in any case, even after FilterChain.
