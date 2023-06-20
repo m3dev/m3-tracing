@@ -28,16 +28,16 @@ See [jvm/README](jvm/README.md).
 
 ## Feature matrix
 
-| Feature                                      | Java (core)                             | Spring                       | Play (Scala)            |
-|---------------------------------------------:| -----------------------------------------------|------------------------------| ------------------------|
-| Supported runtime                            | JRE >= 8                                       | ( Same as Java )             | ( Same as Java )        |
-| Capture incoming HTTP request                | Servlet >= 3.0.1                               | Spring Web                   | Play ?.?                |
-| Capture & Propagate to outgoing HTTP request | Commons HTTP client >= ?.?, async-http-client  | RestTemplate                 | ?????? (Play)           |
-| Capture database call                        | p6spy support for JDBC/RDBMS                   | ( Same as Java )             | ( Same as Java )        |
-| Multi-thread                                 | ( Custom context machanism )                   | ( Same as Java )             | Future wrapper (Play)   |
-| Log correlation                              | SLF4J, Log4j                                   | ( Same as Java )             | ( Same as Java )        |
-| Capture method invocation                    |                                                | method annotation AOP        | Play: ????              |
-| Dependency injection                         |                                                | AutoConfiguration (Boot)     | ????                    |
+| Feature                                      | Java (core)                                   | Spring                       | Play (Scala)            |
+|---------------------------------------------:|-----------------------------------------------|------------------------------| ------------------------|
+| Supported runtime                            | JRE >= 8 (since 2.x,  JRE >= 17 supported)    | ( Same as Java )             | ( Same as Java )        |
+| Capture incoming HTTP request                | Servlet >= 3.0.1                              | Spring Web                   | Play ?.?                |
+| Capture & Propagate to outgoing HTTP request | Commons HTTP client >= ?.?, async-http-client | RestTemplate                 | ?????? (Play)           |
+| Capture database call                        | p6spy support for JDBC/RDBMS                  | ( Same as Java )             | ( Same as Java )        |
+| Multi-thread                                 | ( Custom context machanism )                  | ( Same as Java )             | Future wrapper (Play)   |
+| Log correlation                              | SLF4J, Log4j                                  | ( Same as Java )             | ( Same as Java )        |
+| Capture method invocation                    |                                               | method annotation AOP        | Play: ????              |
+| Dependency injection                         |                                               | AutoConfiguration (Boot)     | ????                    |
 
 Summary of each features are described below, but don't forget to see document of each language to see how to use/enable it.
 
@@ -74,3 +74,6 @@ With this feature, you can capture method call of your own class.
 
 With this feature, this library provides DI configuration so that you can get objects from DI context.
 
+## Note: Jakarta namespace support
+
+Since 2.x, m3-tracing supports Jakarta namespace(Jakarta EE).

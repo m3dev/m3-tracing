@@ -11,7 +11,7 @@ dependencies {
     api(project(":servlet"))
 
     // Caution: Should not expose this dependency to publised POM to avoid overriding servlet-api dependency from spring-boot.
-    compileOnly("javax.servlet:javax.servlet-api:${project.extra["servletApiVersion"]}")
+    compileOnly("jakarta.servlet:jakarta.servlet-api:${project.extra["servletApiVersion"]}")
 
     implementation("org.springframework:spring-web:${project.extra["springVersion"]}")
     implementation("org.springframework:spring-aspects:${project.extra["springVersion"]}")
