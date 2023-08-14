@@ -4,6 +4,18 @@
 ## Unreleased
 -->
 
+## Release notes - 2.0.2 (2023-08-14)
+
+### Changed
+
+- build.gradle.kts: update plugin according to Kotlin version [#11](https://github.com/m3dev/m3-tracing/pull/11)
+
+## Release notes - 2.0.1 (2023-06)
+
+### Changed
+
+- jakartaEE transition [#10](https://github.com/m3dev/m3-tracing/pull/10)
+
 ## Release notes - 1.0.6 (2020-09-18)
 
 ### Added
