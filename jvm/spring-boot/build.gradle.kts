@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm")
 
     // For spring-boot
-    id("org.jetbrains.kotlin.plugin.spring") version "1.3.21"
+    id("org.jetbrains.kotlin.plugin.spring") version "1.7.22"
 }
 
 dependencies {
