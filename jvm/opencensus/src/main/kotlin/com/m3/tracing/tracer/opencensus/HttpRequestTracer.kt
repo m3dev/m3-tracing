@@ -22,8 +22,8 @@ internal class HttpRequestTracer(
         }
     }
     @VisibleForTesting
-    internal val setter = object: TextFormat.Setter<HttpRequestInfo>() {
-        override fun put(carrier: HttpRequestInfo, key: String, value: String) {
+    internal val setter = object: TextFormat.Setter<MutableHttpRequestInfo>() {
+        override fun put(carrier: MutableHttpRequestInfo, key: String, value: String) {
             return carrier.trySetHeader(key, value)
         }
     }
@@ -38,7 +38,7 @@ internal class HttpRequestTracer(
         it.init()
     }
 
-    fun processClientRequest(request: HttpRequestInfo) = HttpClientRequestSpanImpl(clientHandler, tracer, request).also {
+    fun processClientRequest(request: MutableHttpRequestInfo) = HttpClientRequestSpanImpl(clientHandler, tracer, request).also {
         it.init()
     }
 }
@@ -100,9 +100,9 @@ internal class HttpRequestSpanImpl(
 }
 
 internal class HttpClientRequestSpanImpl(
-        private val handler: HttpClientHandler<HttpRequestInfo, HttpResponseInfo, HttpRequestInfo>,
+        private val handler: HttpClientHandler<HttpRequestInfo, HttpResponseInfo, MutableHttpRequestInfo>,
         override val tracer: Tracer,
-        private val request: HttpRequestInfo
+        private val request: MutableHttpRequestInfo
 ): TraceSpanImpl(null), HttpRequestSpan {
     companion object {
         private val logger = LoggerFactory.getLogger(HttpRequestTracer::class.java)

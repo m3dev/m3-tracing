@@ -6,6 +6,7 @@ import com.m3.tracing.TraceSpan
 import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestSpan
 import com.m3.tracing.http.HttpResponseInfo
+import com.m3.tracing.http.MutableHttpRequestInfo
 import org.slf4j.LoggerFactory
 
 /**
@@ -38,7 +39,7 @@ class M3LoggingTracer: M3Tracer {
         override fun startChildSpan(name: String): TraceSpan = TraceSpanImpl(name)
     }
 
-    override fun processOutgoingHttpRequest(request: HttpRequestInfo): HttpRequestSpan = object: TraceSpanImpl("HTTP ${request.url}"), HttpRequestSpan {
+    override fun processOutgoingHttpRequest(request: MutableHttpRequestInfo): HttpRequestSpan = object: TraceSpanImpl("HTTP ${request.url}"), HttpRequestSpan {
         private var e: Throwable? = null
         override fun setError(e: Throwable?) {
             this.e = e

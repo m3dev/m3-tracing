@@ -2,6 +2,7 @@ package com.m3.tracing
 
 import com.m3.tracing.http.HttpRequestInfo
 import com.m3.tracing.http.HttpRequestSpan
+import com.m3.tracing.http.MutableHttpRequestInfo
 import javax.annotation.CheckReturnValue
 import javax.annotation.concurrent.ThreadSafe
 
@@ -34,7 +35,7 @@ interface M3Tracer: AutoCloseable, TraceContext {
      * Caller MUST close the [HttpRequestSpan] to prevent leak.
      */
     @CheckReturnValue
-    fun processOutgoingHttpRequest(request: HttpRequestInfo): HttpRequestSpan
+    fun processOutgoingHttpRequest(request: MutableHttpRequestInfo): HttpRequestSpan
 
     /**
      * Returns context bound to current thread / call stack.
