@@ -10,7 +10,7 @@ open class SpringHttpRequestInfo(protected val req: HttpRequest): HttpRequestInf
 
     @Suppress("UNCHECKED_CAST", "IMPLICIT_ANY")
     override fun <T> tryGetMetadata(key: HttpRequestMetadataKey<T>): T? = when(key) {
-        HttpRequestMetadataKey.Method -> req.methodValue as T?
+        HttpRequestMetadataKey.Method -> req.method.toString() as T?
         HttpRequestMetadataKey.Host -> req.headers.host?.hostName as T?
         HttpRequestMetadataKey.ContentLength -> req.headers.contentLength.let { if (it <= 0) null else it } as T?
         HttpRequestMetadataKey.Path -> req.uri.path as T?

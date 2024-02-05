@@ -17,7 +17,7 @@ class M3TracingHttpRequestInterceptor(
     override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
         return tracer.processOutgoingHttpRequest(wrapRequest(request)).use { span ->
             span["client"] = "RestTemplate"
-            span["method"] = request.methodValue
+            span["method"] = request.method.toString()
             span["uri"] = request.uri.toString()
             execution.execute(request, body).also { response ->
                 span["status"] = response.rawStatusCode

@@ -47,7 +47,7 @@ subprojects {
     val servletApiVersion by extra { "6.0.0" }
 
     // Following versions are based on spring-boot
-    val springBootVersion by extra { "3.0.0" }
+    val springBootVersion by extra { "3.2.2" }
     val springVersion by extra { "6.0.0" }
     val apacheHttpClientVersion by extra { "4.5.8" }
     val okHttpClientVersion by extra { "4.8.0" }
