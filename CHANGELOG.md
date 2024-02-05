@@ -4,6 +4,12 @@
 ## Unreleased
 -->
 
+## Release notes - 2.0.3 (2024-02-05)
+
+### Changed
+
+- Support for Spring Boot 3.2 [#12](https://github.com/m3dev/m3-tracing/pull/12)
+
 ## Release notes - 2.0.2 (2023-08-14)
 
 ### Changed
