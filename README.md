@@ -1,22 +1,21 @@
-Distributed Tracing Wrapper Libraries.
+This repository provides distributed tracing wrapper libraries which we use in our company. 
 
-# Aim of this libraries
+# Aim of these libraries
 
-- Provide unified/tested set of libraries
+- Provide unified/tested sets of libraries
   - No need to load/maintain various `contrib` libraries
-- Provide high-level & simple interface over tracing standard APIs (e.g. OpenCensus)
-  - No need to know detail of API
-  - Provides simple interface
-  - Hide complicated object lifecycle of APIs (hide error prone things from you)
+- Provide high-level & simple interfaces over tracing standard APIs (e.g. OpenCensus)
+  - No need to know details of APIs
+  - Provide simple interfaces
+  - Hide complicated object lifecycles of APIs (hide error prone things from you)
 
-# Non-goal of this libraries
+# Non-goal of these libraries
 
-- Do not aim to provide `agent`, _you need to activate/call this library explicitly_
-  - Do not prefer to use dynamic code rewriting / monkey patching to minimize risk
-  - To use feature of this library, please explicitly call/enable them
-- Do not aim to support all libraries in the world (HTTP client library, logging library, ...)
-  - Focus on use case in our company.
-  - If you want to add library support, feel free to fork this.
+- Do not aim to provide `agent`, _you need to activate/call these libraries explicitly_
+  - We do not prefer to use dynamic code rewriting / monkey patching
+- Do not aim to support all kinds of libraries in the world (HTTP client library, logging library, ...)
+  - We focus on usecases or scenarios appearing in our work.
+  - If you want to add any kinds of library support which is not supported by us, please feel free to fork this repository.
 
 # How to start
 
@@ -39,40 +38,37 @@ See [jvm/README](jvm/README.md).
 | Capture method invocation                    |                                               | method annotation AOP        | Play: ????              |
 | Dependency injection                         |                                               | AutoConfiguration (Boot)     | ????                    |
 
-Summary of each features are described below, but don't forget to see document of each language to see how to use/enable it.
+Summaries of each features are described below. Supplemental documents for each languages are provided to see how to use/enable them.
 
-## Feature: Capture incoming HTTP request
+## Feature: Capture incoming HTTP requests
 
-With this feature, this library automatically create trace/span for each incoming requests.
+A trace/span is automatically created for each incoming request.
 
-## Feature: Capture & Propagate to outgoing HTTP request
+## Feature: Capture & Propagate to outgoing HTTP requests
 
-With this feature:
-
-- This library create span for each outgoing requests
-  - So that you can know duration/summary of outgoing requests
+- The library creates one span for each outgoing request, which helps to know durations/summaries of your outgoing requests
 - This library adds `Trace ID` to outgoing HTTP requests
-  - If destination service uses this library, we can trace request over services (-> "distributed" tracing)
+  - If destination service uses this library, we can trace requests over services (-> "distributed" tracing)
 
 ## Feature: Capture database call
 
-With this feature, this library yield spans for each database call.
+The library yields spans for each database call.
 
 ## Feature: Multi-thread
 
-With this feature, this library wraps multi-thread (async) operations and propagate thread-bounded trace/span to threads.
+The library wraps multi-thread (async) operations and propagate thread-bounded trace/span to threads.
 
 ## Feature: Log correlation
 
-With this feature, you can output `Trace ID` in logs. So that you can find related logs from/to traces.
+You can output `Trace ID` in logs to distinguish which trace/span logs are related.
 
 ## Feature: Capture any method invocation
 
-With this feature, you can capture method call of your own class.
+You can capture method calls of your own classes.
 
 ## Feature: Dependency injection
 
-With this feature, this library provides DI configuration so that you can get objects from DI context.
+The library provides DI configuration so that you can get objects from DI context.
 
 ## Note: Jakarta namespace support
 
